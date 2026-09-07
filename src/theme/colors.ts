@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// ComplyAI Color Palette
+// BlueTick Color Palette
 // Ported 1:1 from Flutter AppColors
 // ─────────────────────────────────────────────────────────────
 

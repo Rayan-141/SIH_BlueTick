@@ -54,7 +54,7 @@ export default function HomeScreen() {
           <View style={styles.brandContainer}>
             <MaterialIcons name="verified" size={20} color={Colors.primary} />
             <Text style={[Typography.titleMedium, { color: Colors.primary, marginLeft: 6, fontWeight: '700' }]}>
-              ComplyAI
+              BlueTick
             </Text>
           </View>
           <Pressable style={styles.headerIcon} onPress={() => router.push('/notifications')}>

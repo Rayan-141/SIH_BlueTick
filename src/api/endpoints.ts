@@ -2,7 +2,7 @@
 // API Endpoints — Ported from Flutter ApiEndpoints
 // ─────────────────────────────────────────────────────────────
 
-export const API_BASE_URL = 'https://api.complyai.example.com';
+export const API_BASE_URL = 'https://api.bluetick.example.com';
 
 export const Endpoints = {
   // ── Auth
