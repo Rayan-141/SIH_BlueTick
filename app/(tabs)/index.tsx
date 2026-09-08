@@ -4,11 +4,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useAuthStore } from '../../src/store/authStore';
+import { useStatsStore } from '../../src/store/statsStore';
 import { useRouter } from 'expo-router';
 import { AppDrawer } from '../../src/components/AppDrawer';
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
+  const stats = useStatsStore();
   const router = useRouter();
   
   const [isDrawerVisible, setDrawerVisible] = useState(false);
@@ -33,9 +35,12 @@ export default function HomeScreen() {
     });
 
     if (!result.canceled) {
+      // Simulate real-time usage: A new image upload adds an inspection to "In Progress"
+      stats.incrementInProgress();
+      
       // In a real app, we would route to analysis screen with the image URI
       // router.push({ pathname: '/analysis/[id]', params: { imageUri: result.assets[0].uri } });
-      Alert.alert('Image Selected', 'Image successfully uploaded for analysis. (Placeholder)', [{ text: 'OK' }]);
+      Alert.alert('Analysis Started', 'Image successfully uploaded! It is now marked as "In Progress" in your dashboard.', [{ text: 'OK' }]);
     }
   };
 
@@ -45,14 +50,6 @@ export default function HomeScreen() {
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
   };
-
-  const statsData: Record<string, { checked: number; issues: number; inProgress: number; compliant: number }> = {
-    'This Week': { checked: 34, issues: 2, inProgress: 8, compliant: 32 }, // 32 + 2 = 34
-    'This Month': { checked: 126, issues: 8, inProgress: 24, compliant: 118 }, // 118 + 8 = 126
-    'This Year': { checked: 1450, issues: 64, inProgress: 120, compliant: 1386 } // 1386 + 64 = 1450
-  };
-
-  const currentStats = statsData[selectedPeriod] || statsData['This Month'];
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -167,28 +164,28 @@ export default function HomeScreen() {
           {/* Checked */}
           <View style={[styles.statBox, { backgroundColor: Colors.primary }]}>
             <MaterialIcons name="check-circle-outline" size={20} color={Colors.textInverse} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>{currentStats.checked}</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>{stats.checked}</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(255,255,255,0.8)' }]}>Checked</Text>
           </View>
 
           {/* Issues */}
           <View style={[styles.statBox, { backgroundColor: Colors.nonCompliant }]}>
             <MaterialIcons name="warning-amber" size={20} color={Colors.textInverse} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>{currentStats.issues}</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>{stats.issues}</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(255,255,255,0.8)' }]}>Issues</Text>
           </View>
 
           {/* In Progress */}
           <View style={[styles.statBox, { backgroundColor: Colors.inProgress }]}>
             <MaterialIcons name="schedule" size={20} color={Colors.textPrimary} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textPrimary, marginTop: 8, marginBottom: 2 }]}>{currentStats.inProgress}</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.textPrimary, marginTop: 8, marginBottom: 2 }]}>{stats.inProgress}</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(0,0,0,0.6)' }]}>In Progress</Text>
           </View>
 
           {/* Compliant */}
           <View style={[styles.statBox, { backgroundColor: Colors.successLight }]}>
             <MaterialIcons name="verified-user" size={20} color={Colors.primary} />
-            <Text style={[Typography.headlineMedium, { color: Colors.primary, marginTop: 8, marginBottom: 2 }]}>{currentStats.compliant}</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.primary, marginTop: 8, marginBottom: 2 }]}>{stats.compliant}</Text>
             <Text style={[Typography.labelSmall, { color: Colors.primary } ]}>Compliant</Text>
           </View>
         </View>
