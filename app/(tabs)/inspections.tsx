@@ -1,147 +1,223 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, TextInput, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
+import { useInspectionLogStore } from '../../src/store/inspectionLogStore';
 
-export default function AlertsScreen() {
-  const router = useRouter();
-  // Using this screen for "Reports" as indicated by the mockup where Alerts tab icon is highlighted for Reports content
+export default function InspectionsScreen() {
+  const { logs } = useInspectionLogStore();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showExportMenu, setShowExportMenu] = useState(false);
+
+  const handleExport = (type: string) => {
+    setShowExportMenu(false);
+    Alert.alert('Export Started', `Your ${type} report is being generated and will download shortly.`);
+  };
+
+  const getStatusBadgeStyle = (status: string) => {
+    switch (status) {
+      case 'Approved':
+        return { bg: '#E8F5E9', text: '#2E7D32' };
+      case 'Pending':
+      case 'AI Review':
+        return { bg: '#FFF3E0', text: '#E65100' };
+      default:
+        return { bg: '#F5F5F5', text: Colors.textSecondary };
+    }
+  };
+
+  const getComplianceBadgeStyle = (status?: string) => {
+    switch (status) {
+      case 'Compliant':
+        return { bg: '#E8F5E9', text: '#2E7D32' };
+      case 'Non-Compliant':
+        return { bg: '#FFEBEE', text: '#C62828' };
+      default:
+        return { bg: '#F5F5F5', text: Colors.textSecondary };
+    }
+  };
+
+  const getAIReviewColor = (level?: string) => {
+    switch (level) {
+      case 'High':
+        return '#C62828';
+      case 'Medium':
+        return '#E65100';
+      case 'Low':
+        return '#2E7D32';
+      default:
+        return Colors.textSecondary;
+    }
+  };
+
+  // Filter logs by search query
+  const filteredLogs = logs.filter(log => 
+    log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    log.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    log.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    log.officerName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Pressable style={styles.iconButton} onPress={() => router.push('/')}>
-          <MaterialIcons name="arrow-back" size={24} color={Colors.textPrimary} />
-        </Pressable>
-        <Text style={[Typography.titleMedium, { fontWeight: '600' }]}>Reports</Text>
-        <View style={{ width: 40 }} />
-      </View>
-
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBox}>
-          <MaterialIcons name="search" size={20} color={Colors.textSecondary} />
-          <TextInput 
-            style={styles.searchInput} 
-            placeholder="Search reports..." 
-            placeholderTextColor={Colors.textSecondary}
-          />
+      <ScrollView stickyHeaderIndices={[1]} showsVerticalScrollIndicator={false}>
+        {/* Header Section */}
+        <View style={styles.headerContainer}>
+          <Text style={[Typography.displaySmall, { fontWeight: '700', color: Colors.primary }]}>Inspections</Text>
+          <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginTop: 4 }]}>
+            View and manage all inspections across regions.
+          </Text>
         </View>
-        <Pressable style={styles.filterButton}>
-          <MaterialIcons name="filter-list" size={24} color={Colors.textSecondary} />
-        </Pressable>
-      </View>
 
-      <View style={styles.tabsContainer}>
-        <Pressable style={[styles.tab, styles.activeTab]}>
-          <Text style={[styles.tabText, styles.activeTabText]}>Summary</Text>
-        </Pressable>
-        <Pressable style={styles.tab}>
-          <Text style={styles.tabText}>Trend</Text>
-        </Pressable>
-        <Pressable style={styles.tab}>
-          <Text style={styles.tabText}>Comparison</Text>
-        </Pressable>
-      </View>
+        {/* Sticky Filters & Search Section */}
+        <View style={styles.stickyContainer}>
+          {/* Filters Row */}
+          <View style={styles.filtersWrapper}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScrollContent}>
+              <View style={styles.filterGroup}>
+                {['Date Range', 'Status', 'Compliance', 'Officer'].map((filter) => (
+                  <Pressable key={filter} style={styles.filterDropdown}>
+                    <Text style={styles.filterText}>{filter}</Text>
+                    <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+                  </Pressable>
+                ))}
+                
+                <Pressable style={styles.filterDropdown}>
+                  <MaterialIcons name="tune" size={16} color={Colors.primary} style={{ marginRight: 4 }} />
+                  <Text style={[styles.filterText, { color: Colors.primary, fontWeight: '600' }]}>More Filters</Text>
+                </Pressable>
+              </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        
-        {/* Overall Compliance Score */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Overall Compliance Score</Text>
-            <View style={styles.dropdown}>
-              <Text style={styles.dropdownText}>This Month</Text>
-              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+              <View style={{ width: 24 }} />
+              
+              {/* Export Button */}
+              <View style={{ position: 'relative' }}>
+                <Pressable 
+                  style={[styles.filterDropdown, { borderColor: Colors.borderLight, borderWidth: 1 }]}
+                  onPress={() => setShowExportMenu(!showExportMenu)}
+                >
+                  <MaterialIcons name="file-download" size={16} color={Colors.textPrimary} style={{ marginRight: 4 }} />
+                  <Text style={[styles.filterText, { color: Colors.textPrimary, fontWeight: '600' }]}>Export</Text>
+                </Pressable>
+
+                {showExportMenu && (
+                  <View style={styles.exportMenu}>
+                    <Pressable style={styles.exportMenuItem} onPress={() => handleExport('PDF')}>
+                      <Text style={styles.exportMenuText}>Export as PDF</Text>
+                    </Pressable>
+                    <Pressable style={styles.exportMenuItem} onPress={() => handleExport('Excel')}>
+                      <Text style={styles.exportMenuText}>Export as Excel</Text>
+                    </Pressable>
+                    <Pressable style={styles.exportMenuItem} onPress={() => handleExport('CSV')}>
+                      <Text style={styles.exportMenuText}>Export as CSV</Text>
+                    </Pressable>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+          </View>
+
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBox}>
+              <MaterialIcons name="search" size={20} color={Colors.textSecondary} />
+              <TextInput 
+                style={styles.searchInput}
+                placeholder="Search inspections, company, product, officer..."
+                placeholderTextColor={Colors.textTertiary}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
             </View>
           </View>
-          
-          <View style={styles.scoreContent}>
+        </View>
+
+        {/* Data Table */}
+        <View style={styles.tableWrapper}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.horizontalScroll}>
             <View>
-              <Text style={[Typography.displayLarge, { color: Colors.primary, fontWeight: '700' }]}>92%</Text>
-              <View style={styles.trendIndicator}>
-                <MaterialIcons name="arrow-upward" size={16} color={Colors.primary} />
-                <Text style={[Typography.labelMedium, { color: Colors.textSecondary, marginLeft: 4 }]}>
-                  <Text style={{ color: Colors.primary, fontWeight: '600' }}>6%</Text> from last month
-                </Text>
+              {/* Table Header */}
+              <View style={styles.tableHeaderRow}>
+                <Text style={[styles.tableHeaderCell, { width: 130 }]}>Inspection ID</Text>
+                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Date</Text>
+                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Company</Text>
+                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Product</Text>
+                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Officer</Text>
+                <Text style={[styles.tableHeaderCell, { width: 110 }]}>Status</Text>
+                <Text style={[styles.tableHeaderCell, { width: 130 }]}>Compliance</Text>
+                <Text style={[styles.tableHeaderCell, { width: 90 }]}>AI Review</Text>
               </View>
-            </View>
-            {/* Mock Donut Chart */}
-            <View style={styles.donutChart}>
-              <View style={styles.donutInner} />
-            </View>
-          </View>
-        </View>
 
-        {/* Score Trend */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Score Trend</Text>
-            <View style={styles.dropdown}>
-              <Text style={styles.dropdownText}>This Month</Text>
-              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
-            </View>
-          </View>
-          <View style={styles.chartPlaceholder}>
-             {/* Mock Chart Area */}
-             <View style={{ flex: 1, borderLeftWidth: 1, borderBottomWidth: 1, borderColor: '#E0E0E0', padding: 8 }}>
-                <Text style={{ color: Colors.textSecondary, fontSize: 10, position: 'absolute', left: -25, top: 0 }}>100%</Text>
-                <Text style={{ color: Colors.textSecondary, fontSize: 10, position: 'absolute', left: -20, top: 40 }}>50%</Text>
-                <Text style={{ color: Colors.textSecondary, fontSize: 10, position: 'absolute', left: -20, bottom: 0 }}>0%</Text>
-                
-                {/* Mock Line */}
-                <View style={{ position: 'absolute', bottom: 30, left: 20, right: 10, height: 2, backgroundColor: Colors.primary, transform: [{ rotate: '-10deg' }] }} />
-                
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: -20, left: 0, right: 0 }}>
-                  <Text style={{ fontSize: 10, color: Colors.textSecondary }}>1 May</Text>
-                  <Text style={{ fontSize: 10, color: Colors.textSecondary }}>15 May</Text>
-                  <Text style={{ fontSize: 10, color: Colors.textSecondary }}>29 May</Text>
+              {/* Table Body */}
+              {filteredLogs.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateText}>No inspections found matching your criteria.</Text>
                 </View>
-             </View>
-          </View>
+              ) : (
+                filteredLogs.map((log, index) => {
+                  const statusStyle = getStatusBadgeStyle(log.status);
+                  const complianceStyle = getComplianceBadgeStyle(log.complianceStatus);
+                  const aiReviewColor = getAIReviewColor(log.aiReview);
+
+                  return (
+                    <View key={log.id} style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd]}>
+                      <Text style={[styles.tableCell, { width: 130, fontWeight: '600', color: Colors.textSecondary }]}>{log.id}</Text>
+                      <Text style={[styles.tableCell, { width: 100 }]}>{log.time}</Text>
+                      <Text style={[styles.tableCell, { width: 150 }]} numberOfLines={1}>{log.companyName}</Text>
+                      <Text style={[styles.tableCell, { width: 150 }]} numberOfLines={1}>{log.productName}</Text>
+                      <Text style={[styles.tableCell, { width: 100 }]} numberOfLines={1}>{log.officerName}</Text>
+                      
+                      <View style={[styles.tableCell, { width: 110, justifyContent: 'center' }]}>
+                        <View style={[styles.badge, { backgroundColor: statusStyle.bg }]}>
+                          <Text style={[styles.badgeText, { color: statusStyle.text }]}>{log.status}</Text>
+                        </View>
+                      </View>
+                      
+                      <View style={[styles.tableCell, { width: 130, justifyContent: 'center' }]}>
+                        {log.complianceStatus ? (
+                          <View style={[styles.badge, { backgroundColor: complianceStyle.bg }]}>
+                            <Text style={[styles.badgeText, { color: complianceStyle.text }]}>{log.complianceStatus}</Text>
+                          </View>
+                        ) : (
+                          <Text style={styles.tableCell}>-</Text>
+                        )}
+                      </View>
+                      
+                      <View style={[styles.tableCell, { width: 90, justifyContent: 'center' }]}>
+                        {log.aiReview ? (
+                          <Text style={[styles.tableCell, { color: aiReviewColor, fontWeight: '600' }]}>{log.aiReview}</Text>
+                        ) : (
+                          <Text style={styles.tableCell}>-</Text>
+                        )}
+                      </View>
+                    </View>
+                  );
+                })
+              )}
+            </View>
+          </ScrollView>
         </View>
 
-        {/* Top Issue Categories */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Top Issue Categories</Text>
-            <View style={styles.dropdown}>
-              <Text style={styles.dropdownText}>This Month</Text>
-              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
-            </View>
+        {/* Pagination */}
+        <View style={styles.paginationContainer}>
+          <Text style={styles.paginationText}>Showing 1 to 10 of 2481 results</Text>
+          <View style={styles.paginationControls}>
+            <Pressable style={styles.pageButton}><MaterialIcons name="chevron-left" size={20} color={Colors.textSecondary} /></Pressable>
+            <Pressable style={[styles.pageButton, styles.pageButtonActive]}><Text style={styles.pageButtonTextActive}>1</Text></Pressable>
+            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>2</Text></Pressable>
+            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>3</Text></Pressable>
+            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>...</Text></Pressable>
+            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>249</Text></Pressable>
+            <Pressable style={styles.pageButton}><MaterialIcons name="chevron-right" size={20} color={Colors.textSecondary} /></Pressable>
           </View>
-          
-          <View style={styles.barChartList}>
-            <View style={styles.barChartRow}>
-              <Text style={styles.barLabel}>Labeling Requirements</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { width: '80%', backgroundColor: '#E65100' }]} />
-              </View>
-              <Text style={styles.barValue}>5</Text>
-            </View>
-            <View style={styles.barChartRow}>
-              <Text style={styles.barLabel}>Ingredients & Allergen</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { width: '50%', backgroundColor: '#E65100' }]} />
-              </View>
-              <Text style={styles.barValue}>3</Text>
-            </View>
-            <View style={styles.barChartRow}>
-              <Text style={styles.barLabel}>Net Quantity Declaration</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { width: '30%', backgroundColor: '#FFB300' }]} />
-              </View>
-              <Text style={styles.barValue}>2</Text>
-            </View>
-            <View style={styles.barChartRow}>
-              <Text style={styles.barLabel}>Barcode & Traceability</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { width: '15%', backgroundColor: '#80CBC4' }]} />
-              </View>
-              <Text style={styles.barValue}>1</Text>
-            </View>
+          <View style={styles.rowsPerPage}>
+            <Text style={styles.paginationText}>10 / page</Text>
+            <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
           </View>
         </View>
-
+        
+        {/* Bottom spacer for tabs */}
+        <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,148 +225,189 @@ export default function AlertsScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-  },
-  iconButton: { padding: 8 },
-  searchContainer: {
-    flexDirection: 'row',
+  headerContainer: {
     paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.md,
+    backgroundColor: '#FFFFFF',
+  },
+  stickyContainer: {
+    backgroundColor: '#FFFFFF',
+    zIndex: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderLight,
+  },
+  filtersWrapper: {
+    paddingVertical: Spacing.sm,
+  },
+  filtersScrollContent: {
+    paddingHorizontal: Spacing.lg,
     alignItems: 'center',
+  },
+  filterGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  filterDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    backgroundColor: '#FFFFFF',
+  },
+  filterText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginRight: 4,
+  },
+  exportMenu: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: 4,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+    minWidth: 140,
+    zIndex: 100,
+  },
+  exportMenuItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+  },
+  exportMenuText: {
+    fontSize: 13,
+    color: Colors.textPrimary,
+  },
+  searchContainer: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
   searchBox: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
-    borderRadius: Radius.full,
+    borderRadius: 8,
     paddingHorizontal: Spacing.md,
-    height: 44,
-    marginRight: Spacing.sm,
+    height: 40,
   },
   searchInput: {
     flex: 1,
-    marginLeft: Spacing.sm,
-    fontSize: 16,
-  },
-  filterButton: { padding: 8 },
-  tabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
-  },
-  tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: Radius.full,
-    marginRight: Spacing.sm,
-    backgroundColor: 'transparent',
-  },
-  activeTab: {
-    backgroundColor: Colors.primary,
-  },
-  tabText: {
+    marginLeft: 8,
     fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: '500',
+    color: Colors.textPrimary,
   },
-  activeTabText: {
-    color: Colors.textInverse,
+  tableWrapper: {
+    marginTop: Spacing.md,
   },
-  content: {
+  horizontalScroll: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 100, // Space for bottom nav
   },
-  card: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 16,
-    padding: Spacing.lg,
-    marginBottom: Spacing.lg,
+  tableHeaderRow: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderLight,
   },
-  cardHeader: {
+  tableHeaderCell: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    paddingHorizontal: 8,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+  },
+  tableRowEven: {
+    backgroundColor: '#FFFFFF',
+  },
+  tableRowOdd: {
+    backgroundColor: '#FAFAFA',
+  },
+  tableCell: {
+    fontSize: 12,
+    color: Colors.textPrimary,
+    paddingHorizontal: 8,
+    alignSelf: 'center',
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  emptyState: {
+    padding: Spacing.xl,
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    color: Colors.textSecondary,
+    fontSize: 14,
+  },
+  paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
+    flexWrap: 'wrap',
+    gap: 16,
   },
-  dropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dropdownText: {
+  paginationText: {
     fontSize: 12,
     color: Colors.textSecondary,
-    marginRight: 2,
   },
-  scoreContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  trendIndicator: {
+  paginationControls: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    gap: 4,
   },
-  donutChart: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 12,
-    borderColor: Colors.primary,
-    borderRightColor: '#FFB300',
-    borderBottomColor: '#A7FFEB',
+  pageButton: {
+    width: 28,
+    height: 28,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 4,
   },
-  donutInner: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#F8F9FA',
+  pageButtonActive: {
+    backgroundColor: Colors.primary,
   },
-  chartPlaceholder: {
-    height: 120,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.md,
-    marginLeft: 25,
+  pageButtonText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
   },
-  barChartList: {
-    marginTop: Spacing.sm,
+  pageButtonTextActive: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
-  barChartRow: {
+  rowsPerPage: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  barLabel: {
-    width: 80,
-    fontSize: 11,
-    color: Colors.textSecondary,
-    lineHeight: 14,
-  },
-  barTrack: {
-    flex: 1,
-    height: 8,
-    backgroundColor: '#E0E0E0',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
     borderRadius: 4,
-    marginHorizontal: Spacing.sm,
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  barValue: {
-    width: 20,
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-    textAlign: 'right',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    gap: 4,
   }
 });
