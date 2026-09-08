@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Modal, TouchableWithoutFeedback } from 'react-native';
 import Svg, { Line, Path, Circle, Defs, LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
 import { Colors, Typography, Spacing } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -9,6 +9,9 @@ interface InspectionTrendChartProps {
 }
 
 export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ currentTotal }) => {
+  const [timeframe, setTimeframe] = useState('This Month');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const chartHeight = 160;
   const chartWidth = 300; // Will be responsive with 100% width, but we use a viewBox
   
@@ -43,22 +46,51 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
   // Area under the line
   const areaD = `${pathD} L ${points[points.length-1].x},${paddingY + innerHeight} L ${points[0].x},${paddingY + innerHeight} Z`;
 
-  // Generate X-axis dates (just roughly current month)
+  // Generate X-axis dates based on timeframe
   const today = new Date();
   const dates = [];
   for(let i=6; i>=0; i--) {
     const d = new Date(today);
-    d.setDate(today.getDate() - (i * 5)); // 5 day intervals
-    dates.push(`${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('default', { month: 'short' })}`);
+    if (timeframe === 'This Week') {
+      d.setDate(today.getDate() - i);
+      dates.push(d.toLocaleString('default', { weekday: 'short' }));
+    } else if (timeframe === 'This Month') {
+      d.setDate(today.getDate() - (i * 5));
+      dates.push(`${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('default', { month: 'short' })}`);
+    } else if (timeframe === 'This Year') {
+      d.setMonth(today.getMonth() - (i * 2));
+      dates.push(d.toLocaleString('default', { month: 'short' }));
+    }
   }
 
   return (
     <View style={styles.card}>
       <View style={styles.header}>
         <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Inspection Trend</Text>
-        <View style={styles.dropdown}>
-          <Text style={styles.dropdownText}>This Month</Text>
-          <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+        <View style={{ zIndex: 100 }}>
+          <Pressable style={styles.dropdown} onPress={() => setDropdownOpen(!dropdownOpen)}>
+            <Text style={styles.dropdownText}>{timeframe}</Text>
+            <MaterialIcons name={dropdownOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={16} color={Colors.textSecondary} />
+          </Pressable>
+          
+          {dropdownOpen && (
+            <View style={styles.dropdownMenu}>
+              {['This Week', 'This Month', 'This Year'].map(option => (
+                <Pressable 
+                  key={option} 
+                  style={[styles.dropdownItem, timeframe === option && styles.dropdownItemActive]}
+                  onPress={() => {
+                    setTimeframe(option);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  <Text style={[styles.dropdownItemText, timeframe === option && styles.dropdownItemTextActive]}>
+                    {option}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
         </View>
       </View>
 
@@ -160,6 +192,39 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textSecondary,
     marginRight: 4,
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 30,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    minWidth: 100,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+  },
+  dropdownItemActive: {
+    backgroundColor: Colors.primary + '10',
+  },
+  dropdownItemText: {
+    fontSize: 12,
+    color: Colors.textPrimary,
+  },
+  dropdownItemTextActive: {
+    color: Colors.primary,
+    fontWeight: '600',
   },
   chartContainer: {
     position: 'relative',
