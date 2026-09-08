@@ -47,9 +47,9 @@ export default function HomeScreen() {
   };
 
   const statsData: Record<string, { checked: number; issues: number; inProgress: number; compliant: number }> = {
-    'This Week': { checked: 34, issues: 2, inProgress: 8, compliant: 32 },
-    'This Month': { checked: 126, issues: 8, inProgress: 24, compliant: 116 },
-    'This Year': { checked: 1450, issues: 64, inProgress: 120, compliant: 1380 }
+    'This Week': { checked: 34, issues: 2, inProgress: 8, compliant: 32 }, // 32 + 2 = 34
+    'This Month': { checked: 126, issues: 8, inProgress: 24, compliant: 118 }, // 118 + 8 = 126
+    'This Year': { checked: 1450, issues: 64, inProgress: 120, compliant: 1386 } // 1386 + 64 = 1450
   };
 
   const currentStats = statsData[selectedPeriod] || statsData['This Month'];
