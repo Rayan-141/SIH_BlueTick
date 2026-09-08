@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useStatsStore } from '../../src/store/statsStore';
 import { InspectionTrendChart } from '../../src/components/InspectionTrendChart';
+import { InspectionActivityTimeline } from '../../src/components/InspectionActivityTimeline';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -29,73 +30,70 @@ export default function DashboardScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <View style={styles.distributionCard}>
-        <Text style={[Typography.titleSmall, { fontWeight: '600', marginBottom: 16 }]}>Compliance Distribution</Text>
-        <View style={styles.distributionRow}>
-          {/* Circular Chart */}
-          <View style={styles.distributionChart}>
-             {/* If total is 0, show an empty grey ring. Otherwise, show colored segments */}
-             {!showColors && (
-               <View style={[styles.donutSegment, { borderColor: '#E0E0E0' }]} />
-             )}
-             
-             {showColors && (
-               <>
-                 <View style={[styles.donutSegment, { borderColor: Colors.primary, transform: [{ rotate: '-45deg' }] }]} />
-                 <View style={[styles.donutSegment, { borderColor: '#E6771A', borderTopColor: 'transparent', borderRightColor: 'transparent', transform: [{ rotate: '45deg' }] }]} />
-                 <View style={[styles.donutSegment, { borderColor: '#FDB617', borderTopColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: 'transparent', transform: [{ rotate: '135deg' }] }]} />
-               </>
-             )}
-             
-             <View style={styles.donutInnerCenter}>
-               <Text style={[Typography.headlineMedium, { fontWeight: '700' }]}>{total}</Text>
-               <Text style={[Typography.labelSmall, { color: Colors.textSecondary }]}>Total</Text>
-             </View>
-          </View>
-          
-          {/* Legends */}
-          <View style={styles.distributionLegends}>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: Colors.primary }]} />
-              <Text style={styles.legendText}>Compliant</Text>
-              <Text style={styles.legendValue}>{stats.compliant} <Text style={styles.legendPercent}>({compliantPercent}%)</Text></Text>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.distributionCard}>
+          <Text style={[Typography.titleSmall, { fontWeight: '600', marginBottom: 16 }]}>Compliance Distribution</Text>
+          <View style={styles.distributionRow}>
+            {/* Circular Chart */}
+            <View style={styles.distributionChart}>
+               {/* If total is 0, show an empty grey ring. Otherwise, show colored segments */}
+               {!showColors && (
+                 <View style={[styles.donutSegment, { borderColor: '#E0E0E0' }]} />
+               )}
+               
+               {showColors && (
+                 <>
+                   <View style={[styles.donutSegment, { borderColor: Colors.primary, transform: [{ rotate: '-45deg' }] }]} />
+                   <View style={[styles.donutSegment, { borderColor: '#E6771A', borderTopColor: 'transparent', borderRightColor: 'transparent', transform: [{ rotate: '45deg' }] }]} />
+                   <View style={[styles.donutSegment, { borderColor: '#FDB617', borderTopColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: 'transparent', transform: [{ rotate: '135deg' }] }]} />
+                 </>
+               )}
+               
+               <View style={styles.donutInnerCenter}>
+                 <Text style={[Typography.headlineMedium, { fontWeight: '700' }]}>{total}</Text>
+                 <Text style={[Typography.labelSmall, { color: Colors.textSecondary }]}>Total</Text>
+               </View>
             </View>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: '#E65100' }]} />
-              <Text style={styles.legendText}>Non-Compliant</Text>
-              <Text style={styles.legendValue}>{stats.issues} <Text style={styles.legendPercent}>({nonCompliantPercent}%)</Text></Text>
-            </View>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: '#FDB617' }]} />
-              <Text style={styles.legendText}>Needs Review</Text>
-              <Text style={styles.legendValue}>{stats.inProgress} <Text style={styles.legendPercent}>({reviewPercent}%)</Text></Text>
-            </View>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: '#E0E0E0' }]} />
-              <Text style={styles.legendText}>Not Applicable</Text>
-              <Text style={styles.legendValue}>0 <Text style={styles.legendPercent}>(0%)</Text></Text>
+            
+            {/* Legends */}
+            <View style={styles.distributionLegends}>
+              <View style={styles.legendRow}>
+                <View style={[styles.legendDot, { backgroundColor: Colors.primary }]} />
+                <Text style={styles.legendText}>Compliant</Text>
+                <Text style={styles.legendValue}>{stats.compliant} <Text style={styles.legendPercent}>({compliantPercent}%)</Text></Text>
+              </View>
+              <View style={styles.legendRow}>
+                <View style={[styles.legendDot, { backgroundColor: '#E65100' }]} />
+                <Text style={styles.legendText}>Non-Compliant</Text>
+                <Text style={styles.legendValue}>{stats.issues} <Text style={styles.legendPercent}>({nonCompliantPercent}%)</Text></Text>
+              </View>
+              <View style={styles.legendRow}>
+                <View style={[styles.legendDot, { backgroundColor: '#FDB617' }]} />
+                <Text style={styles.legendText}>Needs Review</Text>
+                <Text style={styles.legendValue}>{stats.inProgress} <Text style={styles.legendPercent}>({reviewPercent}%)</Text></Text>
+              </View>
+              <View style={styles.legendRow}>
+                <View style={[styles.legendDot, { backgroundColor: '#E0E0E0' }]} />
+                <Text style={styles.legendText}>Not Applicable</Text>
+                <Text style={styles.legendValue}>0 <Text style={styles.legendPercent}>(0%)</Text></Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* Real-time Inspection Trend Line Chart */}
-      <InspectionTrendChart currentTotal={total} />
-      
-      {total === 0 && (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, opacity: 0.5 }}>
-          <MaterialIcons name="dashboard" size={64} color={Colors.borderLight} />
-          <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginTop: Spacing.md, textAlign: 'center' }]}>
-            Your dashboard is clean. As you complete inspections, detailed analytics and trends will appear here.
-          </Text>
-        </View>
-      )}
+        {/* Real-time Inspection Trend Line Chart */}
+        <InspectionTrendChart currentTotal={total} />
+        
+        {/* Horizontal Inspection Activity Timeline */}
+        <InspectionActivityTimeline />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  scrollContent: { paddingBottom: 100 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

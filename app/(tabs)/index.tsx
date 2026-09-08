@@ -44,11 +44,13 @@ export default function HomeScreen() {
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       logStore.addLog({
-        time: timeStr,
-        productName: 'Uploaded Image Analysis',
+        time: 'Today',
+        productName: 'Recent Scan',
         companyName: 'Pending Detection',
         officerName: user?.name?.split(' ')[0] || 'Officer',
         status: 'Pending',
+        imageUri: result.assets[0].uri,
+        score: 0,
       });
       
       // In a real app, we would route to analysis screen with the image URI

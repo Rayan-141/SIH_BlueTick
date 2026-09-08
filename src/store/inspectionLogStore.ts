@@ -4,11 +4,13 @@ export type InspectionStatus = 'Pending' | 'Approved' | 'Rejected' | 'AI Review'
 
 export interface InspectionLog {
   id: string;
-  time: string;
+  time: string; // Used as Date or "Today"
   productName: string;
   companyName: string;
   officerName: string;
-  status: InspectionStatus;
+  status: InspectionStatus | 'Compliant' | 'Issues Found';
+  imageUri?: string;
+  score?: number;
 }
 
 interface InspectionLogState {
