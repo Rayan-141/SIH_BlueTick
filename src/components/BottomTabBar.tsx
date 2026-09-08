@@ -14,7 +14,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { icon: 'home', activeIcon: 'home', label: 'Home', route: '/' },
   { icon: 'assignment', activeIcon: 'assignment', label: 'Inspections', route: '/inspections' },
-  { icon: 'notifications', activeIcon: 'notifications', label: 'Alerts', route: '/alerts' },
+  { icon: 'assessment', activeIcon: 'assessment', label: 'Reports', route: '/reports' },
   { icon: 'person', activeIcon: 'person', label: 'Profile', route: '/profile' },
 ];
 
@@ -24,7 +24,7 @@ export const BottomTabBar = () => {
 
   const getActiveIndex = () => {
     if (pathname.startsWith('/inspections')) return 1;
-    if (pathname.startsWith('/alerts')) return 2;
+    if (pathname.startsWith('/reports')) return 2;
     if (pathname.startsWith('/profile')) return 3;
     return 0; // Default home
   };
