@@ -273,14 +273,10 @@ export default function InspectionsScreen() {
             <View>
               {/* Table Header */}
               <View style={styles.tableHeaderRow}>
-                <Text style={[styles.tableHeaderCell, { width: 130 }]}>Inspection ID</Text>
-                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Date</Text>
-                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Company</Text>
-                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Product</Text>
-                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Officer</Text>
-                <Text style={[styles.tableHeaderCell, { width: 110 }]}>Status</Text>
-                <Text style={[styles.tableHeaderCell, { width: 130 }]}>Compliance</Text>
-                <Text style={[styles.tableHeaderCell, { width: 90 }]}>AI Review</Text>
+                <Text style={[styles.tableHeaderCell, { width: 140 }]}>Inspection ID</Text>
+                <Text style={[styles.tableHeaderCell, { width: 180 }]}>Product</Text>
+                <Text style={[styles.tableHeaderCell, { width: 120 }]}>Status</Text>
+                <Text style={[styles.tableHeaderCell, { width: 140 }]}>Compliance</Text>
               </View>
 
               {/* Table Body */}
@@ -293,35 +289,23 @@ export default function InspectionsScreen() {
                 paginatedLogs.map((log, index) => {
                   const statusStyle = getStatusBadgeStyle(log.status);
                   const complianceStyle = getComplianceBadgeStyle(log.complianceStatus);
-                  const aiReviewColor = getAIReviewColor(log.aiReview);
 
                   return (
                     <View key={log.id} style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd]}>
-                      <Text style={[styles.tableCell, { width: 130, fontWeight: '600', color: Colors.textSecondary }]}>{log.id}</Text>
-                      <Text style={[styles.tableCell, { width: 100 }]}>{log.time}</Text>
-                      <Text style={[styles.tableCell, { width: 150 }]} numberOfLines={1}>{log.companyName}</Text>
-                      <Text style={[styles.tableCell, { width: 150 }]} numberOfLines={1}>{log.productName}</Text>
-                      <Text style={[styles.tableCell, { width: 100 }]} numberOfLines={1}>{log.officerName}</Text>
+                      <Text style={[styles.tableCell, { width: 140, fontWeight: '600', color: Colors.textSecondary }]}>{log.id}</Text>
+                      <Text style={[styles.tableCell, { width: 180 }]} numberOfLines={1}>{log.productName}</Text>
                       
-                      <View style={[styles.tableCell, { width: 110, justifyContent: 'center' }]}>
+                      <View style={[styles.tableCell, { width: 120, justifyContent: 'center' }]}>
                         <View style={[styles.badge, { backgroundColor: statusStyle.bg }]}>
                           <Text style={[styles.badgeText, { color: statusStyle.text }]}>{log.status}</Text>
                         </View>
                       </View>
                       
-                      <View style={[styles.tableCell, { width: 130, justifyContent: 'center' }]}>
+                      <View style={[styles.tableCell, { width: 140, justifyContent: 'center' }]}>
                         {log.complianceStatus ? (
                           <View style={[styles.badge, { backgroundColor: complianceStyle.bg }]}>
                             <Text style={[styles.badgeText, { color: complianceStyle.text }]}>{log.complianceStatus}</Text>
                           </View>
-                        ) : (
-                          <Text style={styles.tableCell}>-</Text>
-                        )}
-                      </View>
-                      
-                      <View style={[styles.tableCell, { width: 90, justifyContent: 'center' }]}>
-                        {log.aiReview ? (
-                          <Text style={[styles.tableCell, { color: aiReviewColor, fontWeight: '600' }]}>{log.aiReview}</Text>
                         ) : (
                           <Text style={styles.tableCell}>-</Text>
                         )}
