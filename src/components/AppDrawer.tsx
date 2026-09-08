@@ -43,24 +43,30 @@ interface AppDrawerProps {
   onClose: () => void;
 }
 
+import { useAuthStore } from '../store/authStore';
+
 export const AppDrawer: React.FC<AppDrawerProps> = ({ onClose }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const user = useAuthStore((state) => state.user);
 
   const navigate = (path: string) => {
     onClose();
     router.push(path as any);
   };
 
+  const displayName = user?.name || 'Aarav Verma';
+  const initial = displayName.charAt(0).toUpperCase();
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Text style={[Typography.headlineMedium, { color: Colors.primary, fontWeight: 'bold' }]}>A</Text>
+          <Text style={[Typography.headlineMedium, { color: Colors.primary, fontWeight: 'bold' }]}>{initial}</Text>
         </View>
         <View style={styles.headerInfo}>
-          <Text style={[Typography.titleMedium, { color: Colors.textInverse }]}>Aarav Verma</Text>
+          <Text style={[Typography.titleMedium, { color: Colors.textInverse }]}>{displayName}</Text>
           <Text style={[Typography.labelMedium, { color: 'rgba(255,255,255,0.8)' }]}>Inspector</Text>
         </View>
         <Pressable onPress={onClose} style={{ padding: 8 }}>

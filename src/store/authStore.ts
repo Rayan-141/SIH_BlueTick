@@ -21,10 +21,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       // Mock login — BACKEND TEAM: replace with real API call
       await new Promise((r) => setTimeout(r, 1000));
+      
+      const emailPrefix = email.split('@')[0];
+      const capitalizedName = emailPrefix 
+        ? emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1) 
+        : 'Aarav';
+        
       const mockUser: UserModel = {
         id: '1',
         email,
-        name: 'Aarav Verma',
+        name: `${capitalizedName} Verma`,
         role: 'Inspector',
         organization: 'BIS',
       };
@@ -44,9 +50,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   checkAuth: async () => {
     const token = await SecureStore.getItemAsync('access_token');
     if (token) {
-      set({
-        isAuthenticated: true,
-        user: { id: '1', email: 'aarav@bis.gov.in', name: 'Aarav Verma', role: 'Inspector' },
+      set((state) => {
+        if (!state.user) {
+          return {
+            isAuthenticated: true,
+            user: { id: '1', email: 'officer@bis.gov.in', name: 'Officer Verma', role: 'Inspector' },
+          };
+        }
+        return { isAuthenticated: true };
       });
       return true;
     }
