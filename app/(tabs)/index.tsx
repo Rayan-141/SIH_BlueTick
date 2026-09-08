@@ -5,15 +5,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useAuthStore } from '../../src/store/authStore';
 import { useStatsStore } from '../../src/store/statsStore';
-import { useInspectionStore } from '../../src/store/inspectionStore';
+import { useInspectionLogStore } from '../../src/store/inspectionLogStore';
 import { useRouter } from 'expo-router';
 import { AppDrawer } from '../../src/components/AppDrawer';
-import { RecentInspectionsList } from '../../src/components/RecentInspectionsList';
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
   const stats = useStatsStore();
-  const addInspection = useInspectionStore((state) => state.addInspection);
+  const logStore = useInspectionLogStore();
   const router = useRouter();
   
   const [isDrawerVisible, setDrawerVisible] = useState(false);
@@ -41,26 +40,30 @@ export default function HomeScreen() {
       // Simulate real-time usage: A new image upload adds an inspection to "In Progress"
       stats.incrementInProgress();
       
-      // Add the scanned image to the Recent Inspections list
+      // Add a log entry for the recent activity timeline
       const now = new Date();
-      addInspection({
-        id: `INS-${Math.floor(1000 + Math.random() * 9000)}`,
-        productName: 'Analyzing scanned label...',
-        company: 'Unknown',
-        officerInitials: user?.name?.substring(0, 2).toUpperCase() || 'AA',
-        officerName: user?.name || 'Aarav',
-        date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        finding: 'Pending',
-        confidence: 0,
-        status: 'AI Review',
-        isHighPriority: true,
-        imageUri: result.assets[0].uri,
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      logStore.addLog({
+        time: timeStr,
+        productName: 'Uploaded Image Analysis',
+        companyName: 'Pending Detection',
+        officerName: user?.name?.split(' ')[0] || 'Officer',
+        status: 'Pending',
       });
       
       // In a real app, we would route to analysis screen with the image URI
       // router.push({ pathname: '/analysis/[id]', params: { imageUri: result.assets[0].uri } });
       Alert.alert('Analysis Started', 'Image successfully uploaded! It is now marked as "In Progress" in your dashboard.', [{ text: 'OK' }]);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Pending': return '#E6771A';
+      case 'Approved': return Colors.primary;
+      case 'Rejected': return Colors.nonCompliant;
+      case 'AI Review': return '#69B6A1';
+      default: return Colors.textSecondary;
     }
   };
 
@@ -210,8 +213,59 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Recent Inspections List */}
-        <RecentInspectionsList />
+        {/* Recent Activity Log */}
+        <View style={styles.recentActivityHeader}>
+          <Text style={[Typography.labelSmall, { color: Colors.primary, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '700' }]}>RECENT ACTIVITY</Text>
+          <Pressable><Text style={[Typography.labelMedium, { color: Colors.primary, fontWeight: '600' }]}>View all &rarr;</Text></Pressable>
+        </View>
+        <Text style={[Typography.titleMedium, { paddingHorizontal: Spacing.screenHorizontal, marginBottom: Spacing.md, fontWeight: '700' }]}>Latest inspection log</Text>
+
+        <View style={styles.timelineContainer}>
+          {logStore.logs.length === 0 ? (
+            <View style={styles.emptyStateContainer}>
+              <MaterialIcons name="history" size={48} color={Colors.borderLight} />
+              <Text style={[Typography.bodyMedium, { color: Colors.textTertiary, marginTop: 12, textAlign: 'center', paddingHorizontal: 32 }]}>
+                No recent activity yet. Start a new inspection to see logs here.
+              </Text>
+            </View>
+          ) : (
+            logStore.logs.map((log, index) => (
+              <View key={log.id} style={styles.timelineItem}>
+                {/* Timeline line and dot */}
+                <View style={styles.timelineLeft}>
+                  <View style={[styles.timelineLine, index === logStore.logs.length - 1 && { backgroundColor: 'transparent' }]} />
+                  <View style={[styles.timelineDot, { borderColor: getStatusColor(log.status) }]} >
+                     {log.status === 'Pending' && <View style={[styles.timelineDotInner, { backgroundColor: getStatusColor(log.status) }]} />}
+                  </View>
+                </View>
+
+                {/* Card content */}
+                <View style={styles.timelineCard}>
+                  <View style={styles.timelineRow}>
+                    <View style={{ width: 70 }}>
+                      <Text style={[Typography.labelSmall, { color: Colors.textSecondary, fontSize: 10 }]}>Today {log.time}</Text>
+                      <Text style={[Typography.labelSmall, { color: Colors.primary, fontWeight: '700', marginTop: 2, fontSize: 11 }]}>{log.id}</Text>
+                    </View>
+                    <View style={{ flex: 1, paddingHorizontal: 6 }}>
+                      <Text style={[Typography.labelMedium, { fontWeight: '700' }]} numberOfLines={1}>{log.productName}</Text>
+                      <Text style={[Typography.bodySmall, { color: Colors.textSecondary, marginTop: 2, fontSize: 11 }]} numberOfLines={1}>{log.companyName}</Text>
+                    </View>
+                    <View style={{ width: 60, alignItems: 'flex-start' }}>
+                      <Text style={[Typography.labelSmall, { color: Colors.textSecondary, fontSize: 9 }]}>Officer</Text>
+                      <Text style={[Typography.labelSmall, { fontWeight: '600', fontSize: 11 }]} numberOfLines={1}>{log.officerName}</Text>
+                    </View>
+                    <View style={{ width: 75, alignItems: 'flex-end', justifyContent: 'center' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: getStatusColor(log.status), marginRight: 4 }} />
+                        <Text style={[Typography.labelSmall, { color: getStatusColor(log.status), fontWeight: '600', fontSize: 11 }]}>{log.status}</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))
+          )}
+        </View>
 
       </ScrollView>
     </SafeAreaView>
@@ -362,6 +416,72 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 16,
     padding: Spacing.md,
+    alignItems: 'center',
+  },
+  recentActivityHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.screenHorizontal,
+    marginTop: Spacing.xl + 16,
+    marginBottom: 8,
+  },
+  timelineContainer: {
+    paddingHorizontal: Spacing.screenHorizontal,
+    marginTop: 8,
+    marginBottom: 40,
+  },
+  emptyStateContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.02)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+    borderStyle: 'dashed',
+  },
+  timelineItem: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  timelineLeft: {
+    width: 24,
+    alignItems: 'center',
+  },
+  timelineLine: {
+    position: 'absolute',
+    top: 24,
+    bottom: -16, 
+    width: 1,
+    backgroundColor: Colors.borderLight,
+  },
+  timelineDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 2,
+    backgroundColor: Colors.surface,
+    marginTop: 18, 
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  timelineDotInner: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  timelineCard: {
+    flex: 1,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+    marginLeft: 8,
+  },
+  timelineRow: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
 });
