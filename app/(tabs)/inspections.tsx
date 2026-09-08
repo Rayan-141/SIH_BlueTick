@@ -273,10 +273,10 @@ export default function InspectionsScreen() {
             <View>
               {/* Table Header */}
               <View style={styles.tableHeaderRow}>
-                <Text style={[styles.tableHeaderCell, { width: 140 }]}>Inspection ID</Text>
-                <Text style={[styles.tableHeaderCell, { width: 180 }]}>Product</Text>
-                <Text style={[styles.tableHeaderCell, { width: 120 }]}>Status</Text>
-                <Text style={[styles.tableHeaderCell, { width: 140 }]}>Compliance</Text>
+                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Inspection ID</Text>
+                <Text style={[styles.tableHeaderCell, { width: 110 }]}>Product</Text>
+                <Text style={[styles.tableHeaderCell, { width: 80 }]}>Status</Text>
+                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Compliance</Text>
               </View>
 
               {/* Table Body */}
@@ -292,19 +292,19 @@ export default function InspectionsScreen() {
 
                   return (
                     <View key={log.id} style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd]}>
-                      <Text style={[styles.tableCell, { width: 140, fontWeight: '600', color: Colors.textSecondary }]}>{log.id}</Text>
-                      <Text style={[styles.tableCell, { width: 180 }]} numberOfLines={1}>{log.productName}</Text>
+                      <Text style={[styles.tableCell, { width: 100, fontWeight: '600', color: Colors.textSecondary }]} numberOfLines={1}>{log.id}</Text>
+                      <Text style={[styles.tableCell, { width: 110 }]} numberOfLines={1}>{log.productName}</Text>
                       
-                      <View style={[styles.tableCell, { width: 120, justifyContent: 'center' }]}>
+                      <View style={[styles.tableCell, { width: 80, justifyContent: 'center' }]}>
                         <View style={[styles.badge, { backgroundColor: statusStyle.bg }]}>
-                          <Text style={[styles.badgeText, { color: statusStyle.text }]}>{log.status}</Text>
+                          <Text style={[styles.badgeText, { color: statusStyle.text }]} numberOfLines={1}>{log.status}</Text>
                         </View>
                       </View>
                       
-                      <View style={[styles.tableCell, { width: 140, justifyContent: 'center' }]}>
+                      <View style={[styles.tableCell, { width: 100, justifyContent: 'center' }]}>
                         {log.complianceStatus ? (
                           <View style={[styles.badge, { backgroundColor: complianceStyle.bg }]}>
-                            <Text style={[styles.badgeText, { color: complianceStyle.text }]}>{log.complianceStatus}</Text>
+                            <Text style={[styles.badgeText, { color: complianceStyle.text }]} numberOfLines={1}>{log.complianceStatus}</Text>
                           </View>
                         ) : (
                           <Text style={styles.tableCell}>-</Text>
