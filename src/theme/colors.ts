@@ -5,29 +5,29 @@
 
 export const Colors = {
   // ── Brand ─────────────────────────────────────────────────
-  primary: '#004D40',
-  primaryLight: '#00796B',
-  primaryDark: '#00251A',
+  primary: '#055756', // Deep Teal
+  primaryLight: '#8DC8BA', // Soft Teal
+  primaryDark: '#033B3A', // Darker variant of Deep Teal
 
-  accent: '#FF6D00',
-  accentLight: '#FF9E40',
-  accentDark: '#C43E00',
+  accent: '#E5771E', // Amber
+  accentLight: '#F39C12', // Lighter Amber
+  accentDark: '#B35B13', // Darker Amber
 
   // ── Semantic ──────────────────────────────────────────────
-  success: '#00796B',
-  successLight: '#B2DFDB',
-  warning: '#FF8F00',
-  warningLight: '#FFE082',
+  success: '#8DC8BA', // Soft Teal for success
+  successLight: '#D1EAE3',
+  warning: '#FDB617', // Sunshine
+  warningLight: '#FEE0A1',
   error: '#D32F2F',
   errorLight: '#FFCDD2',
   info: '#0288D1',
   infoLight: '#B3E5FC',
 
   // ── Compliance Status ─────────────────────────────────────
-  compliant: '#004D40',
-  nonCompliant: '#D32F2F',
-  needsReview: '#FF6D00',
-  inProgress: '#FFB300',
+  compliant: '#055756', // Deep Teal
+  nonCompliant: '#E5771E', // Amber
+  needsReview: '#E5771E', // Amber
+  inProgress: '#FDB617', // Sunshine
   unknown: '#CFD8DC',
 
   // ── Neutrals (Light Theme) ─────────────────────────────────

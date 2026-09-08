@@ -155,21 +155,21 @@ export default function HomeScreen() {
           </View>
 
           {/* Issues */}
-          <View style={[styles.statBox, { backgroundColor: '#E65100' }]}>
+          <View style={[styles.statBox, { backgroundColor: Colors.nonCompliant }]}>
             <MaterialIcons name="warning-amber" size={20} color={Colors.textInverse} />
             <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>8</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(255,255,255,0.8)' }]}>Issues</Text>
           </View>
 
           {/* In Progress */}
-          <View style={[styles.statBox, { backgroundColor: '#FFB300' }]}>
-            <MaterialIcons name="schedule" size={20} color={Colors.textInverse} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>24</Text>
-            <Text style={[Typography.labelSmall, { color: 'rgba(255,255,255,0.8)' }]}>In Progress</Text>
+          <View style={[styles.statBox, { backgroundColor: Colors.inProgress }]}>
+            <MaterialIcons name="schedule" size={20} color={Colors.textPrimary} />
+            <Text style={[Typography.headlineMedium, { color: Colors.textPrimary, marginTop: 8, marginBottom: 2 }]}>24</Text>
+            <Text style={[Typography.labelSmall, { color: 'rgba(0,0,0,0.6)' }]}>In Progress</Text>
           </View>
 
           {/* Compliant */}
-          <View style={[styles.statBox, { backgroundColor: '#E0F7FA' }]}>
+          <View style={[styles.statBox, { backgroundColor: Colors.successLight }]}>
             <MaterialIcons name="verified-user" size={20} color={Colors.primary} />
             <Text style={[Typography.headlineMedium, { color: Colors.primary, marginTop: 8, marginBottom: 2 }]}>116</Text>
             <Text style={[Typography.labelSmall, { color: Colors.primary } ]}>Compliant</Text>
