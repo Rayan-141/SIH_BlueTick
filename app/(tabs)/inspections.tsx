@@ -3,9 +3,16 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, TextInput,
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useInspectionLogStore } from '../../src/store/inspectionLogStore';
+import { useAuthStore } from '../../src/store/authStore';
 
 export default function InspectionsScreen() {
   const { logs } = useInspectionLogStore();
+  const { user } = useAuthStore();
+  
+  // Hard filter: Only show inspections made by the logged-in officer
+  const currentOfficerName = user?.name?.split(' ')[0] || 'Officer';
+  const myLogs = logs.filter(log => log.officerName === currentOfficerName);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showExportMenu, setShowExportMenu] = useState(false);
   
@@ -65,7 +72,7 @@ export default function InspectionsScreen() {
   };
 
   // 1. Apply Search and Filters
-  const filteredLogs = logs.filter(log => {
+  const filteredLogs = myLogs.filter(log => {
     const matchesSearch = 
       log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,8 +133,8 @@ export default function InspectionsScreen() {
   };
 
   const openOfficerPicker = () => {
-    // Dynamically get unique officers from the logs
-    const officers = Array.from(new Set(logs.map(log => log.officerName))).filter(Boolean);
+    // Dynamically get unique officers from the filtered logs
+    const officers = Array.from(new Set(myLogs.map(log => log.officerName))).filter(Boolean);
     setPickerConfig({
       visible: true,
       title: 'Filter by Officer',
