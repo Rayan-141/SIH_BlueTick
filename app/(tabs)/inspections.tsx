@@ -143,12 +143,17 @@ export default function InspectionsScreen() {
     });
   };
 
-  const openMoreFilters = () => {
+  const openExportPicker = () => {
     setPickerConfig({
       visible: true,
-      title: 'More Filters (AI Review Level)',
-      options: ['High', 'Medium', 'Low'],
-      onSelect: setMoreFilter, // We could hook this up to log.aiReview
+      title: 'Export Inspections',
+      options: ['Export as PDF', 'Export as Excel', 'Export as CSV'],
+      onSelect: (val) => {
+        if (val) {
+          const type = val.split(' ').pop() || 'File';
+          handleExport(type);
+        }
+      },
     });
   };
 
@@ -198,26 +203,6 @@ export default function InspectionsScreen() {
                   </Text>
                   <MaterialIcons name="keyboard-arrow-down" size={16} color={complianceFilter ? Colors.primary : Colors.textSecondary} />
                 </Pressable>
-
-                <Pressable 
-                  style={[styles.filterDropdown, officerFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
-                  onPress={openOfficerPicker}
-                >
-                  <Text style={[styles.filterText, officerFilter ? { color: Colors.primary, fontWeight: '600' } : {}]}>
-                    {officerFilter || 'Officer'}
-                  </Text>
-                  <MaterialIcons name="keyboard-arrow-down" size={16} color={officerFilter ? Colors.primary : Colors.textSecondary} />
-                </Pressable>
-                
-                <Pressable 
-                  style={[styles.filterDropdown, moreFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
-                  onPress={openMoreFilters}
-                >
-                  <MaterialIcons name="tune" size={16} color={Colors.primary} style={{ marginRight: 4 }} />
-                  <Text style={[styles.filterText, { color: Colors.primary, fontWeight: '600' }]}>
-                    {moreFilter || 'More Filters'}
-                  </Text>
-                </Pressable>
               </View>
 
               <View style={{ width: 24 }} />
@@ -226,25 +211,11 @@ export default function InspectionsScreen() {
               <View style={{ position: 'relative' }}>
                 <Pressable 
                   style={[styles.filterDropdown, { borderColor: Colors.borderLight, borderWidth: 1 }]}
-                  onPress={() => setShowExportMenu(!showExportMenu)}
+                  onPress={openExportPicker}
                 >
                   <MaterialIcons name="file-download" size={16} color={Colors.textPrimary} style={{ marginRight: 4 }} />
                   <Text style={[styles.filterText, { color: Colors.textPrimary, fontWeight: '600' }]}>Export</Text>
                 </Pressable>
-
-                {showExportMenu && (
-                  <View style={styles.exportMenu}>
-                    <Pressable style={styles.exportMenuItem} onPress={() => handleExport('PDF')}>
-                      <Text style={styles.exportMenuText}>Export as PDF</Text>
-                    </Pressable>
-                    <Pressable style={styles.exportMenuItem} onPress={() => handleExport('Excel')}>
-                      <Text style={styles.exportMenuText}>Export as Excel</Text>
-                    </Pressable>
-                    <Pressable style={styles.exportMenuItem} onPress={() => handleExport('CSV')}>
-                      <Text style={styles.exportMenuText}>Export as CSV</Text>
-                    </Pressable>
-                  </View>
-                )}
               </View>
             </ScrollView>
           </View>
