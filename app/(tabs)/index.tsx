@@ -7,6 +7,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import { useStatsStore } from '../../src/store/statsStore';
 import { useRouter } from 'expo-router';
 import { AppDrawer } from '../../src/components/AppDrawer';
+import { RecentInspectionsList } from '../../src/components/RecentInspectionsList';
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
@@ -189,6 +190,9 @@ export default function HomeScreen() {
             <Text style={[Typography.labelSmall, { color: Colors.primary } ]}>Compliant</Text>
           </View>
         </View>
+
+        {/* Recent Inspections List */}
+        <RecentInspectionsList />
 
       </ScrollView>
     </SafeAreaView>
