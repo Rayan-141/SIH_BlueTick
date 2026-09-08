@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useStatsStore } from '../../src/store/statsStore';
+import { InspectionTrendChart } from '../../src/components/InspectionTrendChart';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -77,13 +78,18 @@ export default function DashboardScreen() {
           </View>
         </View>
       </View>
+
+      {/* Real-time Inspection Trend Line Chart */}
+      <InspectionTrendChart currentTotal={total} />
       
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, opacity: 0.5 }}>
-        <MaterialIcons name="dashboard" size={64} color={Colors.borderLight} />
-        <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginTop: Spacing.md, textAlign: 'center' }]}>
-          Your dashboard is clean. As you complete inspections, detailed analytics and trends will appear here.
-        </Text>
-      </View>
+      {total === 0 && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, opacity: 0.5 }}>
+          <MaterialIcons name="dashboard" size={64} color={Colors.borderLight} />
+          <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginTop: Spacing.md, textAlign: 'center' }]}>
+            Your dashboard is clean. As you complete inspections, detailed analytics and trends will appear here.
+          </Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
