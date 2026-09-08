@@ -39,12 +39,27 @@ export default function HomeScreen() {
     }
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const statsData: Record<string, { checked: number; issues: number; inProgress: number; compliant: number }> = {
+    'This Week': { checked: 34, issues: 2, inProgress: 8, compliant: 32 },
+    'This Month': { checked: 126, issues: 8, inProgress: 24, compliant: 116 },
+    'This Year': { checked: 1450, issues: 64, inProgress: 120, compliant: 1380 }
+  };
+
+  const currentStats = statsData[selectedPeriod] || statsData['This Month'];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Modal visible={isDrawerVisible} animationType="fade" transparent={true}>
         <AppDrawer onClose={() => setDrawerVisible(false)} />
       </Modal>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
         
         {/* Header */}
         <View style={styles.header}>
@@ -58,21 +73,23 @@ export default function HomeScreen() {
             </Text>
           </View>
           <Pressable style={styles.headerIcon} onPress={() => router.push('/notifications')}>
-            <MaterialIcons name="notifications-none" size={24} color={Colors.textPrimary} />
-            {notificationCount > 0 && (
-              <View style={styles.notificationBadge}>
-                <Text style={styles.badgeText}>{notificationCount}</Text>
-              </View>
-            )}
+            <View>
+              <MaterialIcons name="notifications-none" size={24} color={Colors.textPrimary} />
+              {notificationCount > 0 && (
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.badgeText}>{notificationCount}</Text>
+                </View>
+              )}
+            </View>
           </Pressable>
         </View>
 
         {/* Greeting Section */}
         <View style={styles.greetingSection}>
           <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginBottom: 4 }]}>
-            Good morning, {user?.name?.split(' ')[0] || 'Aarav'} 👋
+            {getGreeting()}, {user?.name?.split(' ')[0] || 'Aarav'} 👋
           </Text>
-          <Text style={[Typography.headlineMedium, { color: Colors.primary, fontWeight: '800', width: '70%' }]}>
+          <Text style={[Typography.displaySmall, { color: Colors.primary, fontWeight: '800', width: '70%' }]}>
             Let's make compliance effortless.
           </Text>
           
@@ -150,28 +167,28 @@ export default function HomeScreen() {
           {/* Checked */}
           <View style={[styles.statBox, { backgroundColor: Colors.primary }]}>
             <MaterialIcons name="check-circle-outline" size={20} color={Colors.textInverse} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>126</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>{currentStats.checked}</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(255,255,255,0.8)' }]}>Checked</Text>
           </View>
 
           {/* Issues */}
           <View style={[styles.statBox, { backgroundColor: Colors.nonCompliant }]}>
             <MaterialIcons name="warning-amber" size={20} color={Colors.textInverse} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>8</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.textInverse, marginTop: 8, marginBottom: 2 }]}>{currentStats.issues}</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(255,255,255,0.8)' }]}>Issues</Text>
           </View>
 
           {/* In Progress */}
           <View style={[styles.statBox, { backgroundColor: Colors.inProgress }]}>
             <MaterialIcons name="schedule" size={20} color={Colors.textPrimary} />
-            <Text style={[Typography.headlineMedium, { color: Colors.textPrimary, marginTop: 8, marginBottom: 2 }]}>24</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.textPrimary, marginTop: 8, marginBottom: 2 }]}>{currentStats.inProgress}</Text>
             <Text style={[Typography.labelSmall, { color: 'rgba(0,0,0,0.6)' }]}>In Progress</Text>
           </View>
 
           {/* Compliant */}
           <View style={[styles.statBox, { backgroundColor: Colors.successLight }]}>
             <MaterialIcons name="verified-user" size={20} color={Colors.primary} />
-            <Text style={[Typography.headlineMedium, { color: Colors.primary, marginTop: 8, marginBottom: 2 }]}>116</Text>
+            <Text style={[Typography.headlineMedium, { color: Colors.primary, marginTop: 8, marginBottom: 2 }]}>{currentStats.compliant}</Text>
             <Text style={[Typography.labelSmall, { color: Colors.primary } ]}>Compliant</Text>
           </View>
         </View>
