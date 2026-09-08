@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, TextInput, Alert, Modal, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useInspectionLogStore } from '../../src/store/inspectionLogStore';
@@ -8,6 +8,17 @@ export default function InspectionsScreen() {
   const { logs } = useInspectionLogStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [showExportMenu, setShowExportMenu] = useState(false);
+  
+  // Filtering state
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [complianceFilter, setComplianceFilter] = useState<string | null>(null);
+  
+  // Modal Picker State
+  const [pickerConfig, setPickerConfig] = useState<{ visible: boolean; title: string; options: string[]; onSelect: (val: string | null) => void } | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const handleExport = (type: string) => {
     setShowExportMenu(false);
@@ -50,13 +61,59 @@ export default function InspectionsScreen() {
     }
   };
 
-  // Filter logs by search query
-  const filteredLogs = logs.filter(log => 
-    log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.officerName.toLowerCase().includes(searchQuery.toLowerCase())
+  // 1. Apply Search and Filters
+  const filteredLogs = logs.filter(log => {
+    const matchesSearch = 
+      log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.officerName.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const matchesStatus = statusFilter ? log.status === statusFilter : true;
+    const matchesCompliance = complianceFilter ? log.complianceStatus === complianceFilter : true;
+
+    return matchesSearch && matchesStatus && matchesCompliance;
+  });
+
+  // 2. Pagination Logic
+  const totalItems = filteredLogs.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  
+  const paginatedLogs = filteredLogs.slice(
+    (safeCurrentPage - 1) * ITEMS_PER_PAGE,
+    safeCurrentPage * ITEMS_PER_PAGE
   );
+
+  const handleNextPage = () => {
+    if (safeCurrentPage < totalPages) setCurrentPage(safeCurrentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (safeCurrentPage > 1) setCurrentPage(safeCurrentPage - 1);
+  };
+
+  const openStatusPicker = () => {
+    setPickerConfig({
+      visible: true,
+      title: 'Filter by Status',
+      options: ['Pending', 'Approved', 'AI Review', 'Rejected'],
+      onSelect: setStatusFilter,
+    });
+  };
+
+  const openCompliancePicker = () => {
+    setPickerConfig({
+      visible: true,
+      title: 'Filter by Compliance',
+      options: ['Compliant', 'Non-Compliant'],
+      onSelect: setComplianceFilter,
+    });
+  };
+
+  const openGenericPicker = (title: string) => {
+    Alert.alert('Filter Options', `Advanced filtering for ${title} will be available when connected to the backend.`);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -75,14 +132,37 @@ export default function InspectionsScreen() {
           <View style={styles.filtersWrapper}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScrollContent}>
               <View style={styles.filterGroup}>
-                {['Date Range', 'Status', 'Compliance', 'Officer'].map((filter) => (
-                  <Pressable key={filter} style={styles.filterDropdown}>
-                    <Text style={styles.filterText}>{filter}</Text>
-                    <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
-                  </Pressable>
-                ))}
+                <Pressable style={[styles.filterDropdown, { borderColor: Colors.borderLight }]} onPress={() => openGenericPicker('Date Range')}>
+                  <Text style={styles.filterText}>Date Range</Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+                </Pressable>
+
+                <Pressable 
+                  style={[styles.filterDropdown, statusFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
+                  onPress={openStatusPicker}
+                >
+                  <Text style={[styles.filterText, statusFilter ? { color: Colors.primary, fontWeight: '600' } : {}]}>
+                    {statusFilter || 'Status'}
+                  </Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={statusFilter ? Colors.primary : Colors.textSecondary} />
+                </Pressable>
+
+                <Pressable 
+                  style={[styles.filterDropdown, complianceFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
+                  onPress={openCompliancePicker}
+                >
+                  <Text style={[styles.filterText, complianceFilter ? { color: Colors.primary, fontWeight: '600' } : {}]}>
+                    {complianceFilter || 'Compliance'}
+                  </Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={complianceFilter ? Colors.primary : Colors.textSecondary} />
+                </Pressable>
+
+                <Pressable style={[styles.filterDropdown, { borderColor: Colors.borderLight }]} onPress={() => openGenericPicker('Officer')}>
+                  <Text style={styles.filterText}>Officer</Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+                </Pressable>
                 
-                <Pressable style={styles.filterDropdown}>
+                <Pressable style={[styles.filterDropdown, { borderColor: Colors.borderLight }]} onPress={() => openGenericPicker('More')}>
                   <MaterialIcons name="tune" size={16} color={Colors.primary} style={{ marginRight: 4 }} />
                   <Text style={[styles.filterText, { color: Colors.primary, fontWeight: '600' }]}>More Filters</Text>
                 </Pressable>
@@ -126,7 +206,10 @@ export default function InspectionsScreen() {
                 placeholder="Search inspections, company, product, officer..."
                 placeholderTextColor={Colors.textTertiary}
                 value={searchQuery}
-                onChangeText={setSearchQuery}
+                onChangeText={(text) => {
+                  setSearchQuery(text);
+                  setCurrentPage(1); // Reset page on search
+                }}
               />
             </View>
           </View>
@@ -149,12 +232,13 @@ export default function InspectionsScreen() {
               </View>
 
               {/* Table Body */}
-              {filteredLogs.length === 0 ? (
+              {paginatedLogs.length === 0 ? (
                 <View style={styles.emptyState}>
-                  <Text style={styles.emptyStateText}>No inspections found matching your criteria.</Text>
+                  <MaterialIcons name="assignment" size={48} color={Colors.borderLight} />
+                  <Text style={[styles.emptyStateText, { marginTop: 12 }]}>No inspections found matching your criteria.</Text>
                 </View>
               ) : (
-                filteredLogs.map((log, index) => {
+                paginatedLogs.map((log, index) => {
                   const statusStyle = getStatusBadgeStyle(log.status);
                   const complianceStyle = getComplianceBadgeStyle(log.complianceStatus);
                   const aiReviewColor = getAIReviewColor(log.aiReview);
@@ -199,26 +283,85 @@ export default function InspectionsScreen() {
         </View>
 
         {/* Pagination */}
-        <View style={styles.paginationContainer}>
-          <Text style={styles.paginationText}>Showing 1 to 10 of 2481 results</Text>
-          <View style={styles.paginationControls}>
-            <Pressable style={styles.pageButton}><MaterialIcons name="chevron-left" size={20} color={Colors.textSecondary} /></Pressable>
-            <Pressable style={[styles.pageButton, styles.pageButtonActive]}><Text style={styles.pageButtonTextActive}>1</Text></Pressable>
-            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>2</Text></Pressable>
-            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>3</Text></Pressable>
-            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>...</Text></Pressable>
-            <Pressable style={styles.pageButton}><Text style={styles.pageButtonText}>249</Text></Pressable>
-            <Pressable style={styles.pageButton}><MaterialIcons name="chevron-right" size={20} color={Colors.textSecondary} /></Pressable>
+        {totalItems > 0 && (
+          <View style={styles.paginationContainer}>
+            <Text style={styles.paginationText}>
+              Showing {(safeCurrentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(safeCurrentPage * ITEMS_PER_PAGE, totalItems)} of {totalItems} results
+            </Text>
+            <View style={styles.paginationControls}>
+              <Pressable style={styles.pageButton} onPress={handlePrevPage}>
+                <MaterialIcons name="chevron-left" size={20} color={safeCurrentPage > 1 ? Colors.textPrimary : Colors.textTertiary} />
+              </Pressable>
+              
+              <Pressable style={[styles.pageButton, styles.pageButtonActive]}>
+                <Text style={styles.pageButtonTextActive}>{safeCurrentPage}</Text>
+              </Pressable>
+              
+              {safeCurrentPage < totalPages && (
+                <Pressable style={styles.pageButton} onPress={handleNextPage}>
+                  <Text style={styles.pageButtonText}>{safeCurrentPage + 1}</Text>
+                </Pressable>
+              )}
+              
+              {safeCurrentPage + 1 < totalPages && (
+                <Pressable style={styles.pageButton}>
+                  <Text style={styles.pageButtonText}>...</Text>
+                </Pressable>
+              )}
+              
+              {safeCurrentPage < totalPages && safeCurrentPage + 1 !== totalPages && (
+                <Pressable style={styles.pageButton} onPress={() => setCurrentPage(totalPages)}>
+                  <Text style={styles.pageButtonText}>{totalPages}</Text>
+                </Pressable>
+              )}
+              
+              <Pressable style={styles.pageButton} onPress={handleNextPage}>
+                <MaterialIcons name="chevron-right" size={20} color={safeCurrentPage < totalPages ? Colors.textPrimary : Colors.textTertiary} />
+              </Pressable>
+            </View>
+            <View style={styles.rowsPerPage}>
+              <Text style={styles.paginationText}>10 / page</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+            </View>
           </View>
-          <View style={styles.rowsPerPage}>
-            <Text style={styles.paginationText}>10 / page</Text>
-            <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
-          </View>
-        </View>
+        )}
         
         {/* Bottom spacer for tabs */}
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Filter Modal */}
+      {pickerConfig && (
+        <Modal transparent visible={pickerConfig.visible} animationType="fade">
+          <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setPickerConfig(null)}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={[Typography.titleSmall, { fontWeight: '700' }]}>{pickerConfig.title}</Text>
+                <Pressable onPress={() => setPickerConfig(null)}>
+                  <MaterialIcons name="close" size={24} color={Colors.textSecondary} />
+                </Pressable>
+              </View>
+              
+              <Pressable 
+                style={styles.modalOption} 
+                onPress={() => { pickerConfig.onSelect(null); setPickerConfig(null); setCurrentPage(1); }}
+              >
+                <Text style={[Typography.bodyMedium, { color: Colors.textSecondary }]}>All (Clear Filter)</Text>
+              </Pressable>
+              
+              {pickerConfig.options.map(opt => (
+                <Pressable 
+                  key={opt}
+                  style={styles.modalOption} 
+                  onPress={() => { pickerConfig.onSelect(opt); setPickerConfig(null); setCurrentPage(1); }}
+                >
+                  <Text style={Typography.bodyMedium}>{opt}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 }
@@ -256,7 +399,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     backgroundColor: '#FFFFFF',
   },
   filterText: {
@@ -356,8 +498,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   emptyState: {
-    padding: Spacing.xl,
+    padding: Spacing.xl * 2,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyStateText: {
     color: Colors.textSecondary,
@@ -409,5 +552,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xl * 2,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  modalOption: {
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   }
 });

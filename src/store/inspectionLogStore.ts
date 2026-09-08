@@ -41,7 +41,7 @@ const INITIAL_MOCK_DATA: InspectionLog[] = [
 ];
 
 export const useInspectionLogStore = create<InspectionLogState>((set) => ({
-  logs: INITIAL_MOCK_DATA,
+  logs: [], // Empty by default for real-time usage
   
   addLog: (log) =>
     set((state) => ({
