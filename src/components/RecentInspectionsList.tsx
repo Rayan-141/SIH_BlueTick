@@ -3,103 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image } from 
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../theme';
 
-// --- Dummy Data Models ---
-interface InspectionData {
-  id: string;
-  productName: string;
-  company: string;
-  officerInitials: string;
-  officerName: string;
-  date: string;
-  time: string;
-  finding: 'Compliant' | 'Non-Compliant' | 'Minor' | 'Critical';
-  confidence: number;
-  status: 'AI Review' | 'Pending' | 'Approved' | 'Rejected';
-  isHighPriority: boolean;
-  selected?: boolean;
-}
-
-const DUMMY_INSPECTIONS: InspectionData[] = [
-  {
-    id: 'INS-2847',
-    productName: 'Amul Taaza Toned Milk 1L',
-    company: 'Amul Dairy',
-    officerInitials: 'AS',
-    officerName: 'A. Sharma',
-    date: '04 Sep 2026',
-    time: '10:42 AM',
-    finding: 'Non-Compliant',
-    confidence: 94,
-    status: 'AI Review',
-    isHighPriority: true,
-    selected: true,
-  },
-  {
-    id: 'INS-2850',
-    productName: 'Britannia Digestive Biscuits 200g',
-    company: 'Britannia Industries',
-    officerInitials: 'RV',
-    officerName: 'R. Verma',
-    date: '04 Sep 2026',
-    time: '09:18 AM',
-    finding: 'Compliant',
-    confidence: 87,
-    status: 'Pending',
-    isHighPriority: false,
-  },
-  {
-    id: 'INS-2849',
-    productName: 'MDH Garam Masala 100g',
-    company: 'MDH Spices',
-    officerInitials: 'AS',
-    officerName: 'A. Sharma',
-    date: '04 Sep 2026',
-    time: '08:55 AM',
-    finding: 'Minor',
-    confidence: 92,
-    status: 'Approved',
-    isHighPriority: false,
-  },
-  {
-    id: 'INS-2848',
-    productName: 'Parle-G Original Gluco 800g',
-    company: 'Parle Products',
-    officerInitials: 'PK',
-    officerName: 'P. Kulkarni',
-    date: '03 Sep 2026',
-    time: '10:30 AM',
-    finding: 'Critical',
-    confidence: 71,
-    status: 'Rejected',
-    isHighPriority: false,
-  },
-  {
-    id: 'INS-2846',
-    productName: 'ITC Classmate Notebook A4',
-    company: 'ITC Ltd',
-    officerInitials: 'MP',
-    officerName: 'M. Patil',
-    date: '03 Sep 2026',
-    time: '11:40 AM',
-    finding: 'Compliant',
-    confidence: 98,
-    status: 'Approved',
-    isHighPriority: false,
-  },
-  {
-    id: 'INS-2845',
-    productName: 'Maggi 2-Minute Noodles 70g',
-    company: 'Nestlé India',
-    officerInitials: 'RJ',
-    officerName: 'R. Joshi',
-    date: '03 Sep 2026',
-    time: '11:20 AM',
-    finding: 'Minor',
-    confidence: 81,
-    status: 'Pending',
-    isHighPriority: false,
-  },
-];
+import { useInspectionStore, InspectionData } from '../store/inspectionStore';
 
 // --- Helper Components ---
 const Badge = ({ text, type }: { text: string; type: 'finding' | 'status' | 'priority' }) => {
@@ -154,6 +58,7 @@ const Badge = ({ text, type }: { text: string; type: 'finding' | 'status' | 'pri
 
 export const RecentInspectionsList = () => {
   const [activeTab, setActiveTab] = useState('All');
+  const inspections = useInspectionStore((state) => state.inspections);
 
   return (
     <View style={styles.container}>
@@ -211,7 +116,7 @@ export const RecentInspectionsList = () => {
 
       {/* Inspections List */}
       <View style={styles.listContainer}>
-        {DUMMY_INSPECTIONS.map((item, index) => (
+        {inspections.map((item, index) => (
           <View key={item.id} style={[styles.card, item.selected && styles.selectedCard]}>
             {/* Header Row: Checkbox, ID, Tags */}
             <View style={styles.cardHeader}>
@@ -233,9 +138,13 @@ export const RecentInspectionsList = () => {
 
             {/* Main Content: Product Info */}
             <View style={styles.productRow}>
-              <View style={styles.imagePlaceholder}>
-                <MaterialIcons name="image" size={24} color={Colors.borderMedium} />
-              </View>
+              {item.imageUri ? (
+                <Image source={{ uri: item.imageUri }} style={styles.productImage} />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <MaterialIcons name="image" size={24} color={Colors.borderMedium} />
+                </View>
+              )}
               <View style={styles.productDetails}>
                 <Text style={[Typography.titleSmall, { color: Colors.textPrimary, fontWeight: '600' }]} numberOfLines={1}>
                   {item.productName}
@@ -406,6 +315,13 @@ const styles = StyleSheet.create({
     borderRadius: Radius.s,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+  },
+  productImage: {
+    width: 48,
+    height: 48,
+    borderRadius: Radius.s,
     borderWidth: 1,
     borderColor: Colors.borderLight,
   },

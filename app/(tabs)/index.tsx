@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useAuthStore } from '../../src/store/authStore';
 import { useStatsStore } from '../../src/store/statsStore';
+import { useInspectionStore } from '../../src/store/inspectionStore';
 import { useRouter } from 'expo-router';
 import { AppDrawer } from '../../src/components/AppDrawer';
 import { RecentInspectionsList } from '../../src/components/RecentInspectionsList';
@@ -12,6 +13,7 @@ import { RecentInspectionsList } from '../../src/components/RecentInspectionsLis
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
   const stats = useStatsStore();
+  const addInspection = useInspectionStore((state) => state.addInspection);
   const router = useRouter();
   
   const [isDrawerVisible, setDrawerVisible] = useState(false);
@@ -38,6 +40,23 @@ export default function HomeScreen() {
     if (!result.canceled) {
       // Simulate real-time usage: A new image upload adds an inspection to "In Progress"
       stats.incrementInProgress();
+      
+      // Add the scanned image to the Recent Inspections list
+      const now = new Date();
+      addInspection({
+        id: `INS-${Math.floor(1000 + Math.random() * 9000)}`,
+        productName: 'Analyzing scanned label...',
+        company: 'Unknown',
+        officerInitials: user?.name?.substring(0, 2).toUpperCase() || 'AA',
+        officerName: user?.name || 'Aarav',
+        date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        finding: 'Pending',
+        confidence: 0,
+        status: 'AI Review',
+        isHighPriority: true,
+        imageUri: result.assets[0].uri,
+      });
       
       // In a real app, we would route to analysis screen with the image URI
       // router.push({ pathname: '/analysis/[id]', params: { imageUri: result.assets[0].uri } });
