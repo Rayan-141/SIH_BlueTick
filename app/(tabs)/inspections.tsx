@@ -1,62 +1,19 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, SafeAreaView, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 
-const MOCK_INSPECTIONS = [
-  {
-    id: 1,
-    title: 'Multi Millet Cookies',
-    subtitle: 'Nature Bite',
-    status: 'Compliant',
-    statusColor: '#00BFA5',
-    date: '20 May 2024 • 10:24 AM',
-    score: 92,
-    imageColor: '#004D40'
-  },
-  {
-    id: 2,
-    title: 'Basmati Rice 1kg',
-    subtitle: 'Green Valley Agro',
-    status: 'Issues Found',
-    statusColor: '#E65100',
-    date: '19 May 2024 • 02:15 PM',
-    score: 72,
-    imageColor: '#FF6D00'
-  },
-  {
-    id: 3,
-    title: 'Sunflower Oil 1L',
-    subtitle: 'Healthy Life Pvt. Ltd.',
-    status: 'In Progress',
-    statusColor: '#FFB300',
-    date: '19 May 2024 • 11:30 AM',
-    score: 45,
-    imageColor: '#FFD54F'
-  },
-  {
-    id: 4,
-    title: 'Sugar 1kg',
-    subtitle: 'DSR Sugars',
-    status: 'Compliant',
-    statusColor: '#00BFA5',
-    date: '18 May 2024 • 09:45 AM',
-    score: 96,
-    imageColor: '#E0E0E0'
-  }
-];
-
-export default function InspectionsScreen() {
+export default function AlertsScreen() {
   const router = useRouter();
-
+  // Using this screen for "Reports" as indicated by the mockup where Alerts tab icon is highlighted for Reports content
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Pressable style={styles.iconButton} onPress={() => router.push('/')}>
           <MaterialIcons name="arrow-back" size={24} color={Colors.textPrimary} />
         </Pressable>
-        <Text style={[Typography.titleMedium, { fontWeight: '600' }]}>Inspections</Text>
+        <Text style={[Typography.titleMedium, { fontWeight: '600' }]}>Reports</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -65,7 +22,7 @@ export default function InspectionsScreen() {
           <MaterialIcons name="search" size={20} color={Colors.textSecondary} />
           <TextInput 
             style={styles.searchInput} 
-            placeholder="Search inspections..." 
+            placeholder="Search reports..." 
             placeholderTextColor={Colors.textSecondary}
           />
         </View>
@@ -76,46 +33,115 @@ export default function InspectionsScreen() {
 
       <View style={styles.tabsContainer}>
         <Pressable style={[styles.tab, styles.activeTab]}>
-          <Text style={[styles.tabText, styles.activeTabText]}>All</Text>
+          <Text style={[styles.tabText, styles.activeTabText]}>Summary</Text>
         </Pressable>
         <Pressable style={styles.tab}>
-          <Text style={styles.tabText}>In Progress</Text>
+          <Text style={styles.tabText}>Trend</Text>
         </Pressable>
         <Pressable style={styles.tab}>
-          <Text style={styles.tabText}>Completed</Text>
+          <Text style={styles.tabText}>Comparison</Text>
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.listContainer}>
-        {MOCK_INSPECTIONS.map((item) => (
-          <View key={item.id} style={styles.card}>
-            {/* Placeholder for Image */}
-            <View style={[styles.imagePlaceholder, { backgroundColor: item.imageColor }]} />
-            
-            <View style={styles.cardContent}>
-              <Text style={[Typography.titleSmall, { fontWeight: '600' }]} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <Text style={[Typography.labelMedium, { color: Colors.textSecondary, marginBottom: 4 }]} numberOfLines={1}>
-                {item.subtitle}
-              </Text>
-              <View style={[styles.statusBadge, { backgroundColor: item.statusColor + '20' }]}>
-                <Text style={[Typography.labelSmall, { color: item.statusColor, fontWeight: '600' }]}>
-                  {item.status}
-                </Text>
-              </View>
-              <Text style={[Typography.labelSmall, { color: Colors.textSecondary, marginTop: 4 }]}>
-                {item.date}
-              </Text>
-            </View>
-
-            <View style={styles.scoreRing}>
-              <Text style={[Typography.titleMedium, { color: Colors.primary, fontWeight: '700' }]}>
-                {item.score}%
-              </Text>
+      <ScrollView contentContainerStyle={styles.content}>
+        
+        {/* Overall Compliance Score */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Overall Compliance Score</Text>
+            <View style={styles.dropdown}>
+              <Text style={styles.dropdownText}>This Month</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
             </View>
           </View>
-        ))}
+          
+          <View style={styles.scoreContent}>
+            <View>
+              <Text style={[Typography.displayLarge, { color: Colors.primary, fontWeight: '700' }]}>92%</Text>
+              <View style={styles.trendIndicator}>
+                <MaterialIcons name="arrow-upward" size={16} color={Colors.primary} />
+                <Text style={[Typography.labelMedium, { color: Colors.textSecondary, marginLeft: 4 }]}>
+                  <Text style={{ color: Colors.primary, fontWeight: '600' }}>6%</Text> from last month
+                </Text>
+              </View>
+            </View>
+            {/* Mock Donut Chart */}
+            <View style={styles.donutChart}>
+              <View style={styles.donutInner} />
+            </View>
+          </View>
+        </View>
+
+        {/* Score Trend */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Score Trend</Text>
+            <View style={styles.dropdown}>
+              <Text style={styles.dropdownText}>This Month</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+            </View>
+          </View>
+          <View style={styles.chartPlaceholder}>
+             {/* Mock Chart Area */}
+             <View style={{ flex: 1, borderLeftWidth: 1, borderBottomWidth: 1, borderColor: '#E0E0E0', padding: 8 }}>
+                <Text style={{ color: Colors.textSecondary, fontSize: 10, position: 'absolute', left: -25, top: 0 }}>100%</Text>
+                <Text style={{ color: Colors.textSecondary, fontSize: 10, position: 'absolute', left: -20, top: 40 }}>50%</Text>
+                <Text style={{ color: Colors.textSecondary, fontSize: 10, position: 'absolute', left: -20, bottom: 0 }}>0%</Text>
+                
+                {/* Mock Line */}
+                <View style={{ position: 'absolute', bottom: 30, left: 20, right: 10, height: 2, backgroundColor: Colors.primary, transform: [{ rotate: '-10deg' }] }} />
+                
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: -20, left: 0, right: 0 }}>
+                  <Text style={{ fontSize: 10, color: Colors.textSecondary }}>1 May</Text>
+                  <Text style={{ fontSize: 10, color: Colors.textSecondary }}>15 May</Text>
+                  <Text style={{ fontSize: 10, color: Colors.textSecondary }}>29 May</Text>
+                </View>
+             </View>
+          </View>
+        </View>
+
+        {/* Top Issue Categories */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Top Issue Categories</Text>
+            <View style={styles.dropdown}>
+              <Text style={styles.dropdownText}>This Month</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+            </View>
+          </View>
+          
+          <View style={styles.barChartList}>
+            <View style={styles.barChartRow}>
+              <Text style={styles.barLabel}>Labeling Requirements</Text>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, { width: '80%', backgroundColor: '#E65100' }]} />
+              </View>
+              <Text style={styles.barValue}>5</Text>
+            </View>
+            <View style={styles.barChartRow}>
+              <Text style={styles.barLabel}>Ingredients & Allergen</Text>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, { width: '50%', backgroundColor: '#E65100' }]} />
+              </View>
+              <Text style={styles.barValue}>3</Text>
+            </View>
+            <View style={styles.barChartRow}>
+              <Text style={styles.barLabel}>Net Quantity Declaration</Text>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, { width: '30%', backgroundColor: '#FFB300' }]} />
+              </View>
+              <Text style={styles.barValue}>2</Text>
+            </View>
+            <View style={styles.barChartRow}>
+              <Text style={styles.barLabel}>Barcode & Traceability</Text>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, { width: '15%', backgroundColor: '#80CBC4' }]} />
+              </View>
+              <Text style={styles.barValue}>1</Text>
+            </View>
+          </View>
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -152,9 +178,7 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
     fontSize: 16,
   },
-  filterButton: {
-    padding: 8,
-  },
+  filterButton: { padding: 8 },
   tabsContainer: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.lg,
@@ -178,49 +202,95 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: Colors.textInverse,
   },
-  listContainer: {
+  content: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: 100, // Space for bottom nav
   },
   card: {
+    backgroundColor: '#F8F9FA',
+    borderRadius: 16,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: 16,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
   },
-  imagePlaceholder: {
-    width: 60,
+  dropdownText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginRight: 2,
+  },
+  scoreContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  trendIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  donutChart: {
+    width: 80,
     height: 80,
-    borderRadius: 8,
-    marginRight: Spacing.md,
-  },
-  cardContent: {
-    flex: 1,
-  },
-  statusBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  scoreRing: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 3,
+    borderRadius: 40,
+    borderWidth: 12,
     borderColor: Colors.primary,
-    borderLeftColor: '#E0E0E0',
+    borderRightColor: '#FFB300',
+    borderBottomColor: '#A7FFEB',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: Spacing.md,
+  },
+  donutInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F8F9FA',
+  },
+  chartPlaceholder: {
+    height: 120,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.md,
+    marginLeft: 25,
+  },
+  barChartList: {
+    marginTop: Spacing.sm,
+  },
+  barChartRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  barLabel: {
+    width: 80,
+    fontSize: 11,
+    color: Colors.textSecondary,
+    lineHeight: 14,
+  },
+  barTrack: {
+    flex: 1,
+    height: 8,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 4,
+    marginHorizontal: Spacing.sm,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  barValue: {
+    width: 20,
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    textAlign: 'right',
   }
 });

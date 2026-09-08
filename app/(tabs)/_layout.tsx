@@ -11,10 +11,9 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="standards" />
-      <Tabs.Screen name="assistant" />
-      <Tabs.Screen name="history" />
-      <Tabs.Screen name="settings" />
+      <Tabs.Screen name="dashboard" />
+      <Tabs.Screen name="inspections" />
+      <Tabs.Screen name="profile" />
     </Tabs>
   );
 }
