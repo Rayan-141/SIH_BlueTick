@@ -12,6 +12,9 @@ export default function InspectionsScreen() {
   // Filtering state
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [complianceFilter, setComplianceFilter] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
+  const [officerFilter, setOfficerFilter] = useState<string | null>(null);
+  const [moreFilter, setMoreFilter] = useState<string | null>(null);
   
   // Modal Picker State
   const [pickerConfig, setPickerConfig] = useState<{ visible: boolean; title: string; options: string[]; onSelect: (val: string | null) => void } | null>(null);
@@ -71,8 +74,10 @@ export default function InspectionsScreen() {
       
     const matchesStatus = statusFilter ? log.status === statusFilter : true;
     const matchesCompliance = complianceFilter ? log.complianceStatus === complianceFilter : true;
+    const matchesOfficer = officerFilter ? log.officerName === officerFilter : true;
+    const matchesDate = dateFilter === 'Today' ? log.time.includes('Today') : true; // Simplistic date filter for demo
 
-    return matchesSearch && matchesStatus && matchesCompliance;
+    return matchesSearch && matchesStatus && matchesCompliance && matchesOfficer && matchesDate;
   });
 
   // 2. Pagination Logic
@@ -111,8 +116,33 @@ export default function InspectionsScreen() {
     });
   };
 
-  const openGenericPicker = (title: string) => {
-    Alert.alert('Filter Options', `Advanced filtering for ${title} will be available when connected to the backend.`);
+  const openDatePicker = () => {
+    setPickerConfig({
+      visible: true,
+      title: 'Date Range',
+      options: ['Today', 'This Week', 'This Month', 'This Year'],
+      onSelect: setDateFilter,
+    });
+  };
+
+  const openOfficerPicker = () => {
+    // Dynamically get unique officers from the logs
+    const officers = Array.from(new Set(logs.map(log => log.officerName))).filter(Boolean);
+    setPickerConfig({
+      visible: true,
+      title: 'Filter by Officer',
+      options: officers.length > 0 ? officers : ['No Officers Available'],
+      onSelect: (val) => val === 'No Officers Available' ? null : setOfficerFilter(val),
+    });
+  };
+
+  const openMoreFilters = () => {
+    setPickerConfig({
+      visible: true,
+      title: 'More Filters (AI Review Level)',
+      options: ['High', 'Medium', 'Low'],
+      onSelect: setMoreFilter, // We could hook this up to log.aiReview
+    });
   };
 
   return (
@@ -132,9 +162,14 @@ export default function InspectionsScreen() {
           <View style={styles.filtersWrapper}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScrollContent}>
               <View style={styles.filterGroup}>
-                <Pressable style={[styles.filterDropdown, { borderColor: Colors.borderLight }]} onPress={() => openGenericPicker('Date Range')}>
-                  <Text style={styles.filterText}>Date Range</Text>
-                  <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+                <Pressable 
+                  style={[styles.filterDropdown, dateFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
+                  onPress={openDatePicker}
+                >
+                  <Text style={[styles.filterText, dateFilter ? { color: Colors.primary, fontWeight: '600' } : {}]}>
+                    {dateFilter || 'Date Range'}
+                  </Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={dateFilter ? Colors.primary : Colors.textSecondary} />
                 </Pressable>
 
                 <Pressable 
@@ -157,14 +192,24 @@ export default function InspectionsScreen() {
                   <MaterialIcons name="keyboard-arrow-down" size={16} color={complianceFilter ? Colors.primary : Colors.textSecondary} />
                 </Pressable>
 
-                <Pressable style={[styles.filterDropdown, { borderColor: Colors.borderLight }]} onPress={() => openGenericPicker('Officer')}>
-                  <Text style={styles.filterText}>Officer</Text>
-                  <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.textSecondary} />
+                <Pressable 
+                  style={[styles.filterDropdown, officerFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
+                  onPress={openOfficerPicker}
+                >
+                  <Text style={[styles.filterText, officerFilter ? { color: Colors.primary, fontWeight: '600' } : {}]}>
+                    {officerFilter || 'Officer'}
+                  </Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={officerFilter ? Colors.primary : Colors.textSecondary} />
                 </Pressable>
                 
-                <Pressable style={[styles.filterDropdown, { borderColor: Colors.borderLight }]} onPress={() => openGenericPicker('More')}>
+                <Pressable 
+                  style={[styles.filterDropdown, moreFilter ? { borderColor: Colors.primary, backgroundColor: Colors.primary + '10' } : { borderColor: Colors.borderLight }]} 
+                  onPress={openMoreFilters}
+                >
                   <MaterialIcons name="tune" size={16} color={Colors.primary} style={{ marginRight: 4 }} />
-                  <Text style={[styles.filterText, { color: Colors.primary, fontWeight: '600' }]}>More Filters</Text>
+                  <Text style={[styles.filterText, { color: Colors.primary, fontWeight: '600' }]}>
+                    {moreFilter || 'More Filters'}
+                  </Text>
                 </Pressable>
               </View>
 
