@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, Platform } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { Colors, Typography } from '../src/theme';
+import { useInspectionLogStore } from '../src/store/inspectionLogStore';
+import { useAuthStore } from '../src/store/authStore';
 
 export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [flash, setFlash] = useState<boolean>(false);
   const router = useRouter();
+  const logStore = useInspectionLogStore();
+  const { user } = useAuthStore();
 
   if (!permission) {
     return <View style={styles.container} />;
@@ -17,7 +22,7 @@ export default function ScannerScreen() {
   if (!permission.granted) {
     return (
       <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ textAlign: 'center', marginBottom: 20 }}>We need your permission to show the camera</Text>
+        <Text style={{ textAlign: 'center', marginBottom: 20, color: 'white' }}>We need your permission to show the camera</Text>
         <Pressable onPress={requestPermission} style={styles.permissionBtn}>
           <Text style={{ color: 'white' }}>Grant Permission</Text>
         </Pressable>
@@ -28,6 +33,37 @@ export default function ScannerScreen() {
   const handleCapture = () => {
     // Navigate to processing or result screen directly for mockup purposes
     router.replace('/analysis/123');
+  };
+
+  const handleUploadFromGallery = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [3, 4],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        logStore.addLog({
+          time: 'Today',
+          productName: 'Uploaded Image',
+          companyName: 'Pending Detection',
+          officerName: user?.name?.split(' ')[0] || 'Officer',
+          status: 'Pending',
+          imageUri: result.assets[0].uri
+        });
+        
+        // For web/mobile parity, navigate to analysis mock
+        router.replace('/analysis/123');
+      }
+    } catch (error) {
+      console.error("Error picking image", error);
+    }
+  };
+
+  const toggleFlash = () => {
+    setFlash(!flash);
   };
 
   return (
@@ -43,8 +79,8 @@ export default function ScannerScreen() {
             <MaterialIcons name="arrow-back" size={28} color={Colors.textInverse} />
           </Pressable>
           <Text style={[Typography.titleLarge, { color: Colors.textInverse }]}>Scan Label</Text>
-          <Pressable onPress={() => setFlash(!flash)} style={styles.iconButton}>
-            <MaterialIcons name={flash ? "flash-on" : "flash-off"} size={28} color={Colors.textInverse} />
+          <Pressable onPress={toggleFlash} style={styles.iconButton}>
+            <MaterialIcons name={flash ? "flash-off" : "flash-on"} size={28} color={Colors.textInverse} />
           </Pressable>
         </View>
 
@@ -64,7 +100,7 @@ export default function ScannerScreen() {
 
         {/* Bottom Controls */}
         <View style={styles.bottomControls}>
-          <Pressable style={styles.iconButton}>
+          <Pressable style={styles.iconButton} onPress={handleUploadFromGallery}>
             <MaterialIcons name="photo-library" size={32} color={Colors.textInverse} />
           </Pressable>
           
@@ -72,11 +108,13 @@ export default function ScannerScreen() {
             <Pressable style={styles.captureButtonOuter} onPress={handleCapture}>
               <View style={styles.captureButtonInner} />
             </Pressable>
-            <Text style={[Typography.labelMedium, styles.uploadText]}>Upload from gallery</Text>
+            <Pressable onPress={handleUploadFromGallery}>
+              <Text style={[Typography.labelMedium, styles.uploadText]}>Upload from gallery</Text>
+            </Pressable>
           </View>
 
-          <Pressable style={styles.iconButton}>
-            <MaterialIcons name="highlight" size={32} color={Colors.textInverse} />
+          <Pressable style={styles.iconButton} onPress={toggleFlash}>
+            <MaterialIcons name={flash ? "highlight" : "highlight-outline"} size={32} color={Colors.textInverse} />
           </Pressable>
         </View>
       </CameraView>
