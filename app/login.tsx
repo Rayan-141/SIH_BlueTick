@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 
@@ -38,14 +38,32 @@ export default function LoginScreen() {
       {/* Background Blobs */}
       <View style={[styles.blob, styles.lightBlobTop]} />
       <View style={[styles.blob, styles.darkBlobTop]} />
-      <View style={[styles.blob, styles.darkBlobRight]} />
       <View style={[styles.blob, styles.lightBlobBottom]} />
+      <View style={[styles.blob, styles.orangeBlobBottom]} />
 
       <ScrollView 
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Logo Section */}
+        <View style={styles.logoSection}>
+          <View style={styles.logoIconContainer}>
+            {/* The 'C' Shape */}
+            <View style={styles.cShape} />
+            {/* Box Icon inside */}
+            <View style={styles.boxIconWrapper}>
+              <MaterialCommunityIcons name="package-variant-closed" size={54} color={LOGIN_COLORS.deepJungleGreen} />
+            </View>
+            {/* Checkmark overlapping */}
+            <View style={styles.checkIconWrapper}>
+              <MaterialCommunityIcons name="check-bold" size={40} color={LOGIN_COLORS.deepJungleGreen} />
+            </View>
+          </View>
+          <Text style={styles.brandName}>CheckMate</Text>
+          <Text style={styles.brandSubtitle}>AI-Powered Product Compliance & Inspection</Text>
+        </View>
+
         <View style={styles.header}>
           <Text style={styles.title}>Login</Text>
           <Text style={styles.subtitle}>Good to see you back! ❤️</Text>
@@ -53,11 +71,11 @@ export default function LoginScreen() {
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <MaterialIcons name="mail" size={20} color={Colors.textSecondary} style={styles.inputIcon} />
+            <MaterialIcons name="mail" size={20} color={LOGIN_COLORS.deepJungleGreen} style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               placeholder="you@example.com"
-              placeholderTextColor={Colors.textTertiary}
+              placeholderTextColor={Colors.textSecondary}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -66,11 +84,11 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <MaterialIcons name="lock" size={20} color={Colors.textSecondary} style={styles.inputIcon} />
+            <MaterialIcons name="lock" size={20} color={LOGIN_COLORS.deepJungleGreen} style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               placeholder="••••••••"
-              placeholderTextColor={Colors.textTertiary}
+              placeholderTextColor={Colors.textSecondary}
               value={password}
               onChangeText={setPassword}
               secureTextEntry={obscurePassword}
@@ -78,7 +96,7 @@ export default function LoginScreen() {
             <MaterialIcons
               name={obscurePassword ? "visibility-off" : "visibility"}
               size={20}
-              color={Colors.textSecondary}
+              color={LOGIN_COLORS.deepJungleGreen}
               style={styles.inputIconRight}
               onPress={() => setObscurePassword(!obscurePassword)}
             />
@@ -107,7 +125,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#FFFFFF',
+    backgroundColor: LOGIN_COLORS.beige,
     position: 'relative',
   },
   
@@ -117,69 +135,117 @@ const styles = StyleSheet.create({
   },
   lightBlobTop: {
     top: -100,
-    left: -100,
-    width: width * 1.3,
+    left: -50,
+    width: width * 1.5,
     height: 550,
-    backgroundColor: `${LOGIN_COLORS.lightGreen}40`, // 25% opacity light green
-    borderBottomRightRadius: 350,
+    backgroundColor: LOGIN_COLORS.lightGreen, 
+    borderBottomRightRadius: 400,
     borderBottomLeftRadius: 100,
+    opacity: 0.9,
   },
   darkBlobTop: {
-    top: -100,
+    top: -150,
     left: -100,
-    width: width * 1.0,
-    height: 500,
+    width: width * 1.2,
+    height: 600,
     backgroundColor: LOGIN_COLORS.deepJungleGreen,
-    borderBottomRightRadius: 300,
-  },
-  darkBlobRight: {
-    top: height * 0.45,
-    right: -50,
-    width: 120,
-    height: 200,
-    backgroundColor: LOGIN_COLORS.deepJungleGreen,
-    borderTopLeftRadius: 100,
-    borderBottomLeftRadius: 100,
+    borderBottomRightRadius: 450,
+    borderBottomLeftRadius: 200,
   },
   lightBlobBottom: {
     bottom: -150,
     right: -100,
     width: width,
     height: 400,
-    backgroundColor: `${LOGIN_COLORS.lightGreen}20`,
+    backgroundColor: `${LOGIN_COLORS.lightGreen}30`,
     borderTopLeftRadius: 300,
+  },
+  orangeBlobBottom: {
+    bottom: -50,
+    right: -50,
+    width: 150,
+    height: 150,
+    backgroundColor: LOGIN_COLORS.spanishOrange,
+    borderRadius: 75,
   },
   
   // --- Foreground Content ---
   content: { 
     flexGrow: 1,
     paddingHorizontal: Spacing.xl,
-    paddingTop: height * 0.5, // Pushes content exactly halfway down the screen like the blue mockup
+    paddingTop: height * 0.15, // Pushed up slightly to fit the logo
     paddingBottom: Spacing.xxl,
   },
-  header: { 
+  
+  // --- Logo Section ---
+  logoSection: {
+    alignItems: 'center',
     marginBottom: Spacing.xl,
+  },
+  logoIconContainer: {
+    width: 140,
+    height: 140,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+    position: 'relative',
+  },
+  cShape: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 22,
+    borderColor: LOGIN_COLORS.deepJungleGreen,
+    borderRightColor: 'transparent',
+    transform: [{ rotate: '45deg' }],
+    position: 'absolute',
+  },
+  boxIconWrapper: {
+    position: 'absolute',
+    transform: [{ translateX: -8 }, { translateY: 2 }], // Adjust box position within C
+  },
+  checkIconWrapper: {
+    position: 'absolute',
+    transform: [{ translateX: 28 }, { translateY: -15 }], // Overlap the checkmark
+    backgroundColor: LOGIN_COLORS.beige,
+    borderRadius: 20,
+    padding: -2,
+  },
+  brandName: {
+    fontSize: 42,
+    fontWeight: '900',
+    color: LOGIN_COLORS.deepJungleGreen,
+    letterSpacing: -1,
+  },
+  brandSubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+  },
+
+  header: { 
+    marginBottom: Spacing.lg,
   },
   title: { 
     fontSize: 48,
     fontWeight: '800',
-    color: '#000000',
+    color: LOGIN_COLORS.deepJungleGreen,
     marginBottom: 8,
   },
   subtitle: { 
     fontSize: 18,
-    color: Colors.textSecondary,
+    color: Colors.textPrimary,
     marginBottom: 16,
   },
   form: {
-    marginTop: Spacing.lg,
+    marginTop: Spacing.sm,
   },
   inputContainer: {
     flexDirection: 'row', 
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1, 
-    borderColor: '#E0E0E0',
+    backgroundColor: 'transparent',
+    borderWidth: 1.5, 
+    borderColor: LOGIN_COLORS.deepJungleGreen,
     borderRadius: Radius.lg,
     marginBottom: Spacing.md,
     paddingHorizontal: 16,
@@ -196,12 +262,13 @@ const styles = StyleSheet.create({
     flex: 1, 
     height: '100%',
     fontSize: 16,
-    color: Colors.textPrimary,
+    color: LOGIN_COLORS.deepJungleGreen,
+    fontWeight: '500',
   },
   forgotPassword: { 
     alignSelf: 'flex-end', 
     color: LOGIN_COLORS.spanishOrange, 
-    fontWeight: '600',
+    fontWeight: '700',
     marginTop: 4,
     marginBottom: Spacing.xl, 
   },
@@ -216,7 +283,7 @@ const styles = StyleSheet.create({
   loginBtnText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   guestBtn: {
     height: 48,
@@ -224,8 +291,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   guestBtnText: {
-    color: Colors.textSecondary,
+    color: LOGIN_COLORS.deepJungleGreen,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });
