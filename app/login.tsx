@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, Dimensions } from 'react-native';
+import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, Dimensions, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 
@@ -48,20 +48,11 @@ export default function LoginScreen() {
       >
         {/* Logo Section */}
         <View style={styles.logoSection}>
-          <View style={styles.logoIconContainer}>
-            {/* The 'C' Shape */}
-            <View style={styles.cShape} />
-            {/* Box Icon inside */}
-            <View style={styles.boxIconWrapper}>
-              <MaterialCommunityIcons name="package-variant-closed" size={54} color={LOGIN_COLORS.deepJungleGreen} />
-            </View>
-            {/* Checkmark overlapping */}
-            <View style={styles.checkIconWrapper}>
-              <MaterialCommunityIcons name="check-bold" size={40} color={LOGIN_COLORS.deepJungleGreen} />
-            </View>
-          </View>
-          <Text style={styles.brandName}>CheckMate</Text>
-          <Text style={styles.brandSubtitle}>AI-Powered Product Compliance & Inspection</Text>
+          <Image 
+            source={require('../assets/CheckMate Logo.png')} 
+            style={styles.logoImage} 
+            resizeMode="contain" 
+          />
         </View>
 
         <View style={styles.header}>
@@ -173,54 +164,22 @@ const styles = StyleSheet.create({
   content: { 
     flexGrow: 1,
     paddingHorizontal: Spacing.xl,
-    paddingTop: height * 0.15, // Pushed up slightly to fit the logo
+    paddingTop: height * 0.35, // Pushed down to avoid covering the logo in the dark green blob
     paddingBottom: Spacing.xxl,
   },
   
   // --- Logo Section ---
   logoSection: {
     alignItems: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
-  logoIconContainer: {
-    width: 140,
-    height: 140,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-    position: 'relative',
-  },
-  cShape: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 22,
-    borderColor: LOGIN_COLORS.deepJungleGreen,
-    borderRightColor: 'transparent',
-    transform: [{ rotate: '45deg' }],
-    position: 'absolute',
-  },
-  boxIconWrapper: {
-    position: 'absolute',
-    transform: [{ translateX: -8 }, { translateY: 2 }], // Adjust box position within C
-  },
-  checkIconWrapper: {
-    position: 'absolute',
-    transform: [{ translateX: 28 }, { translateY: -15 }], // Overlap the checkmark
-    backgroundColor: LOGIN_COLORS.beige,
-    borderRadius: 20,
-    padding: -2,
-  },
-  brandName: {
-    fontSize: 42,
-    fontWeight: '900',
-    color: LOGIN_COLORS.deepJungleGreen,
-    letterSpacing: -1,
-  },
-  brandSubtitle: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: '500',
+  logoImage: {
+    width: 250,
+    height: 250,
+    // Add multiply blend mode to remove white background on web rendering
+    //@ts-ignore
+    mixBlendMode: 'multiply',
+    marginBottom: -20, // Negative margin to bring the "Login" text closer since the image contains whitespace
   },
 
   header: { 
