@@ -118,22 +118,22 @@ const styles = StyleSheet.create({
   lightBlobTop: {
     top: -100,
     left: -100,
-    width: width * 1.2,
-    height: 450,
+    width: width * 1.3,
+    height: 550,
     backgroundColor: `${LOGIN_COLORS.lightGreen}40`, // 25% opacity light green
-    borderBottomRightRadius: 300,
+    borderBottomRightRadius: 350,
     borderBottomLeftRadius: 100,
   },
   darkBlobTop: {
     top: -100,
     left: -100,
-    width: width * 0.9,
-    height: 400,
+    width: width * 1.0,
+    height: 500,
     backgroundColor: LOGIN_COLORS.deepJungleGreen,
-    borderBottomRightRadius: 250,
+    borderBottomRightRadius: 300,
   },
   darkBlobRight: {
-    top: height * 0.4,
+    top: height * 0.45,
     right: -50,
     width: 120,
     height: 200,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   content: { 
     flexGrow: 1,
     paddingHorizontal: Spacing.xl,
-    paddingTop: height * 0.35, // Push content down below the blobs
+    paddingTop: height * 0.5, // Pushes content exactly halfway down the screen like the blue mockup
     paddingBottom: Spacing.xxl,
   },
   header: { 
