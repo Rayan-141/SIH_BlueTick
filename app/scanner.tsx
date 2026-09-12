@@ -114,7 +114,7 @@ export default function ScannerScreen() {
           </View>
 
           <Pressable style={styles.iconButton} onPress={toggleFlash}>
-            <MaterialIcons name={flash ? "highlight" : "highlight-outline"} size={32} color={Colors.textInverse} />
+            <MaterialIcons name={flash ? "flash-on" : "flash-off"} size={32} color={Colors.textInverse} />
           </Pressable>
         </View>
       </CameraView>
