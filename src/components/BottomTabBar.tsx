@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors, Typography, Dimensions } from '../theme';
 
 interface NavItem {
@@ -58,9 +58,11 @@ export const BottomTabBar = () => {
           {NAV_ITEMS.slice(0, 2).map((item, index) => buildNavItem(item, index))}
           
           <View style={styles.fabContainer}>
-            <Pressable style={styles.fab} onPress={() => router.push('/scanner')}>
-              <MaterialIcons name="add" size={28} color={Colors.textInverse} />
-            </Pressable>
+            <View style={styles.fabHalo}>
+              <Pressable style={styles.fab} onPress={() => router.push('/scanner')}>
+                <MaterialCommunityIcons name="barcode-scan" size={28} color={Colors.textInverse} />
+              </Pressable>
+            </View>
           </View>
 
           {NAV_ITEMS.slice(2, 4).map((item, index) => buildNavItem(item, index + 2))}
@@ -73,15 +75,20 @@ export const BottomTabBar = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.borderLight,
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    bottom: 24, // Floating above bottom edge
+    left: 24,
+    right: 24,
+    borderRadius: 35, // Pill shape
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   safeArea: {
     height: 70,
+    borderRadius: 35,
   },
   row: {
     flexDirection: 'row',
@@ -99,13 +106,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+    top: -12, // Float above the bar
   },
-  fab: {
-    backgroundColor: Colors.primary,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  fabHalo: {
+    backgroundColor: 'rgba(164, 194, 79, 0.3)', // Light Green from theme with opacity
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  fab: {
+    backgroundColor: '#4E8346', // Distinct organic green from mockup
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 4,
   },
 });
