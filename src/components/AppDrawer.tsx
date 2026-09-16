@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Pressable, ScrollView, StyleSheet, Modal } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing } from '../theme';
@@ -49,10 +49,16 @@ export const AppDrawer: React.FC<AppDrawerProps> = ({ onClose }) => {
   const router = useRouter();
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
+  const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const navigate = (path: string) => {
     onClose();
     router.push(path as any);
+  };
+
+  const handleLogout = () => {
+    setLogoutModalVisible(false);
+    navigate('/login');
   };
 
   const displayName = user?.name || 'Aarav Verma';
@@ -87,7 +93,7 @@ export const AppDrawer: React.FC<AppDrawerProps> = ({ onClose }) => {
 
         <View style={styles.divider} />
 
-        <DrawerItem icon="logout" title="Logout" iconColor={Colors.accent} textColor={Colors.accent} onPress={() => navigate('/login')} />
+        <DrawerItem icon="logout" title="Logout" iconColor={Colors.accent} textColor={Colors.accent} onPress={() => setLogoutModalVisible(true)} />
       </ScrollView>
 
       {/* Bottom Decoration */}
@@ -95,6 +101,45 @@ export const AppDrawer: React.FC<AppDrawerProps> = ({ onClose }) => {
         <View style={[styles.circle, { right: -20, bottom: -20, width: 120, height: 120, backgroundColor: Colors.accent }]} />
         <View style={[styles.circle, { right: 60, bottom: -50, width: 100, height: 100, backgroundColor: Colors.primary }]} />
       </View>
+
+      {/* Logout Modal */}
+      <Modal
+        visible={isLogoutModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setLogoutModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Warning Icon */}
+            <View style={styles.warningIconContainer}>
+              <MaterialIcons name="priority-high" size={48} color={Colors.surface} />
+            </View>
+
+            {/* Title */}
+            <Text style={[Typography.titleLarge, styles.modalTitle]}>
+              Are you sure you want to log out?
+            </Text>
+
+            {/* Buttons */}
+            <View style={styles.modalButtonsRow}>
+              <Pressable
+                style={[styles.modalButton, styles.modalButtonCancel]}
+                onPress={() => setLogoutModalVisible(false)}
+              >
+                <Text style={[Typography.button, styles.modalButtonTextCancel]}>Cancel</Text>
+              </Pressable>
+              
+              <Pressable
+                style={[styles.modalButton, styles.modalButtonLogout]}
+                onPress={handleLogout}
+              >
+                <Text style={[Typography.button, styles.modalButtonTextLogout]}>Logout</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -139,4 +184,65 @@ const styles = StyleSheet.create({
   },
   bottomDeco: { height: 100, overflow: 'hidden' },
   circle: { position: 'absolute', borderRadius: 999 },
+  
+  // Logout Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalContent: {
+    backgroundColor: Colors.surface,
+    borderRadius: 24,
+    padding: 32,
+    alignItems: 'center',
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  warningIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F06565', // Soft red/coral that fits the image and app palette
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalTitle: {
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  modalButtonsRow: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 16,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: '#F06565',
+  },
+  modalButtonLogout: {
+    backgroundColor: '#F06565',
+  },
+  modalButtonTextCancel: {
+    color: '#F06565',
+  },
+  modalButtonTextLogout: {
+    color: Colors.textInverse,
+  },
 });
