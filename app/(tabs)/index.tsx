@@ -142,7 +142,7 @@ export default function HomeScreen() {
 
         {/* Greeting Section */}
         <View style={styles.greetingSection}>
-          <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginBottom: 4 }]}>
+          <Text style={[Typography.titleMedium, { color: Colors.textSecondary, marginBottom: 4 }]}>
             {getGreeting()}, {user?.name?.split(' ')[0] || 'Aarav'} 👋
           </Text>
           <Text 
