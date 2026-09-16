@@ -146,19 +146,12 @@ export default function HomeScreen() {
             {getGreeting()}, {user?.name?.split(' ')[0] || 'Aarav'} 👋
           </Text>
           <Text 
-            style={[Typography.headlineSmall, { color: Colors.primary, fontWeight: '800' }]} 
+            style={[Typography.headlineMedium, { color: Colors.primary, fontWeight: '800' }]} 
             numberOfLines={1} 
             adjustsFontSizeToFit
           >
             Make compliance effortless.
           </Text>
-          
-          {/* Decorative dots - simplified representation */}
-          <View style={styles.decorativeDots}>
-            {[...Array(9)].map((_, i) => (
-              <View key={i} style={styles.dot} />
-            ))}
-          </View>
         </View>
 
         {/* Hero Card */}
