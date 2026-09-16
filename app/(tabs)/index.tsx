@@ -90,8 +90,8 @@ export default function HomeScreen() {
           </Pressable>
           <View style={styles.brandContainer}>
             <Image 
-              source={require('../../assets/CheckMate_Horizontal_Logo_Transparent.png')}
-              style={{ height: 38, width: 190 }}
+              source={require('../../assets/CheckMate_Horizontal_Logo.png')}
+              style={{ height: 52, width: 260 }}
               resizeMode="contain"
             />
           </View>
@@ -285,6 +285,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.screenHorizontal,
     paddingVertical: Spacing.md,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderLight,
   },
   headerIcon: {
     padding: 8,
