@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Pressable, SafeAreaView, Modal, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, SafeAreaView, Modal, Alert, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
@@ -89,10 +89,11 @@ export default function HomeScreen() {
             <MaterialIcons name="menu" size={24} color={Colors.textPrimary} />
           </Pressable>
           <View style={styles.brandContainer}>
-            <MaterialIcons name="verified" size={20} color={Colors.primary} />
-            <Text style={[Typography.titleMedium, { color: Colors.primary, marginLeft: 6, fontWeight: '700' }]}>
-              BlueTick
-            </Text>
+            <Image 
+              source={require('../../assets/CheckMate_Horizontal_Logo.png')}
+              style={{ height: 28, width: 140 }}
+              resizeMode="contain"
+            />
           </View>
           <Pressable style={styles.headerIcon} onPress={() => router.push('/notifications')}>
             <View>
