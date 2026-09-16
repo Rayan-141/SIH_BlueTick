@@ -90,8 +90,8 @@ export default function HomeScreen() {
           </Pressable>
           <View style={styles.brandContainer}>
             <Image 
-              source={require('../../assets/CheckMate_Horizontal_Logo.png')}
-              style={{ height: 28, width: 140 }}
+              source={require('../../assets/CheckMate_Horizontal_Logo_Transparent.png')}
+              style={{ height: 38, width: 190 }}
               resizeMode="contain"
             />
           </View>
