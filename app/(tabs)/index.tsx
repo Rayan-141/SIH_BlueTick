@@ -145,8 +145,12 @@ export default function HomeScreen() {
           <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginBottom: 4 }]}>
             {getGreeting()}, {user?.name?.split(' ')[0] || 'Aarav'} 👋
           </Text>
-          <Text style={[Typography.displaySmall, { color: Colors.primary, fontWeight: '800', width: '70%' }]}>
-            Let's make compliance effortless.
+          <Text 
+            style={[Typography.displaySmall, { color: Colors.primary, fontWeight: '800' }]} 
+            numberOfLines={1} 
+            adjustsFontSizeToFit
+          >
+            Make compliance effortless.
           </Text>
           
           {/* Decorative dots - simplified representation */}
