@@ -1,9 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
+import { usePreferencesStore } from '../../src/store/preferencesStore';
 
 export default function ProfileScreen() {
+  const router = useRouter();
+  const language = usePreferencesStore((state) => state.language);
+
+  const openSection = (section: 'personal' | 'preferences' | 'password' | 'notifications' | 'language') => {
+    router.push(`/profile/${section}`);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -26,34 +35,34 @@ export default function ProfileScreen() {
 
         {/* Menu Items */}
         <View style={styles.menuContainer}>
-          <Pressable style={styles.menuItem}>
+          <Pressable style={styles.menuItem} onPress={() => openSection('personal')}>
             <MaterialIcons name="person-outline" size={24} color={Colors.textSecondary} />
             <Text style={styles.menuText}>Personal Information</Text>
             <MaterialIcons name="chevron-right" size={24} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.menuItem}>
+          <Pressable style={styles.menuItem} onPress={() => openSection('preferences')}>
             <MaterialIcons name="settings" size={24} color={Colors.textSecondary} />
             <Text style={styles.menuText}>Preferences</Text>
             <MaterialIcons name="chevron-right" size={24} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.menuItem}>
+          <Pressable style={styles.menuItem} onPress={() => openSection('password')}>
             <MaterialIcons name="lock-outline" size={24} color={Colors.textSecondary} />
             <Text style={styles.menuText}>Change Password</Text>
             <MaterialIcons name="chevron-right" size={24} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.menuItem}>
+          <Pressable style={styles.menuItem} onPress={() => openSection('notifications')}>
             <MaterialIcons name="notifications-none" size={24} color={Colors.textSecondary} />
             <Text style={styles.menuText}>Notification Settings</Text>
             <MaterialIcons name="chevron-right" size={24} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.menuItem}>
+          <Pressable style={styles.menuItem} onPress={() => openSection('language')}>
             <MaterialIcons name="language" size={24} color={Colors.textSecondary} />
             <Text style={styles.menuText}>Language</Text>
-            <Text style={[Typography.labelMedium, { color: Colors.textSecondary, marginRight: 8 }]}>English</Text>
+            <Text style={[Typography.labelMedium, { color: Colors.textSecondary, marginRight: 8 }]}>{language}</Text>
             <MaterialIcons name="chevron-right" size={24} color={Colors.textSecondary} />
           </Pressable>
         </View>

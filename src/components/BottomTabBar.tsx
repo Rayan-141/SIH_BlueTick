@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors, Typography, Dimensions } from '../theme';
+import { NAV_TRANSLATIONS, usePreferencesStore } from '../store/preferencesStore';
 
 interface NavItem {
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -21,6 +22,12 @@ const NAV_ITEMS: NavItem[] = [
 export const BottomTabBar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const language = usePreferencesStore((state) => state.language);
+  const labels = NAV_TRANSLATIONS[language];
+  const navItems = NAV_ITEMS.map((item, index) => ({
+    ...item,
+    label: [labels.home, labels.dashboard, labels.inspections, labels.profile][index],
+  }));
 
   const getActiveIndex = () => {
     if (pathname.startsWith('/dashboard')) return 1;
@@ -55,7 +62,7 @@ export const BottomTabBar = () => {
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.row}>
-          {NAV_ITEMS.slice(0, 2).map((item, index) => buildNavItem(item, index))}
+          {navItems.slice(0, 2).map((item, index) => buildNavItem(item, index))}
           
           <View style={styles.fabContainer}>
             <View style={styles.fabHalo}>
@@ -65,7 +72,7 @@ export const BottomTabBar = () => {
             </View>
           </View>
 
-          {NAV_ITEMS.slice(2, 4).map((item, index) => buildNavItem(item, index + 2))}
+          {navItems.slice(2, 4).map((item, index) => buildNavItem(item, index + 2))}
         </View>
       </SafeAreaView>
     </View>
