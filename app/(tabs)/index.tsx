@@ -171,6 +171,7 @@ export default function HomeScreen() {
             AI-powered label analysis in seconds
           </Text>
 
+
           <Pressable style={styles.scanButton} onPress={() => router.push('/scanner')}>
             <MaterialIcons name="center-focus-strong" size={20} color={Colors.primary} />
             <Text style={[Typography.button, { color: Colors.primary, marginLeft: 8 }]}>Scan Label</Text>
