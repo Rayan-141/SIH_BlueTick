@@ -156,11 +156,19 @@ export default function HomeScreen() {
 
         {/* Hero Card */}
         <View style={styles.heroCard}>
-          <Text style={[Typography.headlineSmall, { color: Colors.textInverse, fontWeight: '700' }]}>
-            Start New{'\n'}Inspection
+          <Text 
+            style={[Typography.headlineSmall, { color: Colors.textInverse, fontWeight: '700', width: '75%' }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            Start New Inspection
           </Text>
-          <Text style={[Typography.bodySmall, { color: 'rgba(255,255,255,0.8)', marginTop: 8, marginBottom: 24 }]}>
-            AI-powered label analysis{'\n'}in seconds
+          <Text 
+            style={[Typography.bodySmall, { color: 'rgba(255,255,255,0.8)', marginTop: 8, marginBottom: 24, width: '75%' }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            AI-powered label analysis in seconds
           </Text>
 
           <View style={styles.heroIconContainer}>
