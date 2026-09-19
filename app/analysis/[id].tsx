@@ -2,7 +2,73 @@ import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import Svg, { Circle, G } from 'react-native-svg';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
+
+const DonutChart = () => {
+  const size = 180;
+  const strokeWidth = 14;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  
+  // Percentages
+  const greenPct = 0.70;
+  const orangePct = 0.15;
+  const greyPct = 0.15;
+  
+  // Gap calculation
+  const gap = 8; // length of gap in pixels
+  
+  return (
+    <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center', marginVertical: Spacing.lg }}>
+      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <G rotation="-90" origin={`${size/2}, ${size/2}`}>
+          
+          {/* Grey Segment */}
+          <Circle 
+            cx={size/2} cy={size/2} r={radius} 
+            stroke="#C0CBCB" 
+            strokeWidth={strokeWidth} 
+            fill="transparent"
+            strokeDasharray={`${circumference * greyPct - gap} ${circumference}`}
+            strokeDashoffset={-circumference * (greenPct + orangePct)}
+            strokeLinecap="round" 
+          />
+          
+          {/* Orange Segment */}
+          <Circle 
+            cx={size/2} cy={size/2} r={radius} 
+            stroke="#F39C12" 
+            strokeWidth={strokeWidth} 
+            fill="transparent"
+            strokeDasharray={`${circumference * orangePct - gap} ${circumference}`}
+            strokeDashoffset={-circumference * greenPct}
+            strokeLinecap="round" 
+          />
+
+          {/* Green Segment */}
+          <Circle 
+            cx={size/2} cy={size/2} r={radius} 
+            stroke={Colors.primary} 
+            strokeWidth={strokeWidth} 
+            fill="transparent"
+            strokeDasharray={`${circumference * greenPct - gap} ${circumference}`}
+            strokeDashoffset={0}
+            strokeLinecap="round" 
+          />
+        </G>
+      </Svg>
+      <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ fontSize: 44, fontWeight: '800', color: Colors.primary }}>
+          92<Text style={{ fontSize: 24, fontWeight: '700' }}>%</Text>
+        </Text>
+        <Text style={[Typography.labelLarge, { color: Colors.primary, marginTop: -4, fontWeight: '600' }]}>
+          Compliant
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 export default function InspectionResultScreen() {
   const router = useRouter();
@@ -11,77 +77,70 @@ export default function InspectionResultScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Pressable style={styles.headerIcon} onPress={() => router.back()}>
-          <MaterialIcons name="arrow-back" size={24} color={Colors.textPrimary} />
+          <MaterialIcons name="arrow-back" size={28} color={Colors.textPrimary} />
         </Pressable>
-        <Text style={[Typography.titleMedium, { fontWeight: '600' }]}>Inspection Result</Text>
-        <View style={{ width: 40 }} /> {/* Spacer */}
+        <Text style={[Typography.titleMedium, { fontWeight: '700', fontSize: 18 }]}>Inspection Result</Text>
+        <View style={{ width: 44 }} /> {/* Spacer */}
       </View>
 
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         
         {/* Main Card */}
         <View style={styles.resultCard}>
-          {/* Circular Chart Representation */}
-          <View style={styles.chartContainer}>
-            <View style={styles.circleOuter}>
-              {/* This is a simple representation. For a real ring chart, react-native-svg is typically used */}
-              <View style={styles.circleInner}>
-                <Text style={[Typography.displayLarge, { color: Colors.primary, fontWeight: '700' }]}>92%</Text>
-                <Text style={[Typography.labelLarge, { color: Colors.primary }]}>Compliant</Text>
-              </View>
-            </View>
+          {/* Top Section */}
+          <View style={styles.cardTop}>
+            <DonutChart />
+            <Text style={[Typography.bodyLarge, styles.summaryText]}>
+              Great! This label meets most{'\n'}compliance requirements.
+            </Text>
           </View>
 
-          <Text style={[Typography.bodyLarge, styles.summaryText]}>
-            Great! This label meets most compliance requirements.
-          </Text>
-
-          {/* Stats List */}
-          <View style={styles.statsList}>
+          {/* Bottom Section (Stats) */}
+          <View style={styles.cardBottom}>
             {/* Row 1 */}
             <View style={styles.statRow}>
               <View style={[styles.iconBox, { backgroundColor: Colors.primary }]}>
                 <MaterialIcons name="check" size={20} color={Colors.textInverse} />
               </View>
               <View style={styles.statTextContainer}>
-                <Text style={[Typography.titleMedium, { color: Colors.textPrimary }]}>126</Text>
-                <Text style={[Typography.labelSmall, { color: Colors.textSecondary }]}>Requirements Passed</Text>
+                <Text style={[Typography.titleMedium, { color: Colors.primary, fontWeight: '700' }]}>126</Text>
+                <Text style={[Typography.labelSmall, { color: Colors.textSecondary, fontWeight: '500' }]}>Requirements Passed</Text>
               </View>
             </View>
             <View style={styles.divider} />
 
             {/* Row 2 */}
             <View style={styles.statRow}>
-              <View style={[styles.iconBox, { backgroundColor: '#E65100' }]}>
+              <View style={[styles.iconBox, { backgroundColor: '#F39C12' }]}>
                 <MaterialIcons name="warning-amber" size={20} color={Colors.textInverse} />
               </View>
               <View style={styles.statTextContainer}>
-                <Text style={[Typography.titleMedium, { color: '#E65100' }]}>8</Text>
-                <Text style={[Typography.labelSmall, { color: Colors.textSecondary }]}>Needs Attention</Text>
+                <Text style={[Typography.titleMedium, { color: '#F39C12', fontWeight: '700' }]}>8</Text>
+                <Text style={[Typography.labelSmall, { color: Colors.textSecondary, fontWeight: '500' }]}>Needs Attention</Text>
               </View>
             </View>
             <View style={styles.divider} />
 
             {/* Row 3 */}
             <View style={styles.statRow}>
-              <View style={[styles.iconBox, { backgroundColor: '#FFB300' }]}>
+              <View style={[styles.iconBox, { backgroundColor: '#FDB617' }]}>
                 <MaterialIcons name="schedule" size={20} color={Colors.textInverse} />
               </View>
               <View style={styles.statTextContainer}>
-                <Text style={[Typography.titleMedium, { color: Colors.textPrimary }]}>24</Text>
-                <Text style={[Typography.labelSmall, { color: Colors.textSecondary }]}>In Progress</Text>
+                <Text style={[Typography.titleMedium, { color: Colors.textPrimary, fontWeight: '700' }]}>24</Text>
+                <Text style={[Typography.labelSmall, { color: Colors.textSecondary, fontWeight: '500' }]}>In Progress</Text>
               </View>
             </View>
             <View style={styles.divider} />
 
             {/* Row 4 */}
             <View style={styles.statRow}>
-              <View style={[styles.iconBox, { backgroundColor: '#E0E0E0' }]}>
-                <MaterialIcons name="remove" size={20} color={Colors.textSecondary} />
+              <View style={[styles.iconBox, { backgroundColor: '#C0CBCB' }]}>
+                <MaterialIcons name="remove" size={20} color={Colors.textInverse} />
               </View>
               <View style={styles.statTextContainer}>
-                <Text style={[Typography.titleMedium, { color: Colors.textPrimary }]}>4</Text>
-                <Text style={[Typography.labelSmall, { color: Colors.textSecondary }]}>Not Applicable</Text>
+                <Text style={[Typography.titleMedium, { color: Colors.textPrimary, fontWeight: '700' }]}>4</Text>
+                <Text style={[Typography.labelSmall, { color: Colors.textSecondary, fontWeight: '500' }]}>Not Applicable</Text>
               </View>
             </View>
           </View>
@@ -93,8 +152,8 @@ export default function InspectionResultScreen() {
         </Pressable>
 
         <Pressable style={styles.secondaryButton}>
-          <MaterialIcons name="share" size={20} color={Colors.primary} />
-          <Text style={[Typography.button, { color: Colors.primary, marginLeft: 8 }]}>Share Report</Text>
+          <MaterialIcons name="share" size={20} color={Colors.primary} style={{ marginRight: 8 }} />
+          <Text style={[Typography.button, { color: Colors.primary }]}>Share Report</Text>
         </Pressable>
 
       </ScrollView>
@@ -115,63 +174,49 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   container: { flex: 1 },
-  content: { paddingHorizontal: Spacing.screenHorizontal, paddingBottom: 40, paddingTop: 12 },
+  content: { paddingHorizontal: 20, paddingBottom: 40, paddingTop: 12 },
   resultCard: {
     backgroundColor: Colors.surface,
     borderRadius: 24,
-    padding: Spacing.xl,
     marginBottom: Spacing.xl,
-    alignItems: 'center',
     shadowColor: Colors.shadowDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 16,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 8,
   },
-  chartContainer: {
-    alignItems: 'center',
-    marginVertical: Spacing.md,
-  },
-  circleOuter: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 8,
-    borderColor: Colors.primary,
-    borderRightColor: '#E65100', // Mocking the colored segments
-    borderBottomColor: '#A7FFEB',
-    justifyContent: 'center',
+  cardTop: {
+    backgroundColor: '#EDF4F3',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: Spacing.xl,
     alignItems: 'center',
   },
-  circleInner: {
-    width: 170,
-    height: 170,
-    borderRadius: 85,
-    justifyContent: 'center',
-    alignItems: 'center',
+  cardBottom: {
+    backgroundColor: Colors.surface,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    padding: Spacing.xl,
+    paddingVertical: 16,
   },
   summaryText: {
     textAlign: 'center',
-    fontWeight: '500',
-    marginTop: Spacing.md,
-    marginBottom: Spacing.xl,
-    color: Colors.textPrimary,
-  },
-  statsList: {
-    width: '100%',
+    fontWeight: '600',
+    color: '#1E293B',
+    lineHeight: 24,
   },
   statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
+    paddingVertical: 12,
   },
   iconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.md,
+    marginRight: 16,
   },
   statTextContainer: {
     flex: 1,
@@ -187,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    borderRadius: Radius.button,
+    borderRadius: 16,
     marginBottom: Spacing.md,
   },
   secondaryButton: {
@@ -196,8 +241,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    borderRadius: Radius.button,
-    borderWidth: 1,
+    borderRadius: 16,
+    borderWidth: 1.5,
     borderColor: Colors.primary,
   },
 });
