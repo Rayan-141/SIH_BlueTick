@@ -157,14 +157,14 @@ export default function HomeScreen() {
         {/* Hero Card */}
         <View style={styles.heroCard}>
           <Text 
-            style={[Typography.headlineSmall, { color: Colors.textInverse, fontWeight: '700' }]}
+            style={[Typography.headlineSmall, { color: Colors.textInverse, fontWeight: '700', textAlign: 'center', fontSize: 26 }]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >
             Start New Inspection
           </Text>
           <Text 
-            style={[Typography.bodySmall, { color: 'rgba(255,255,255,0.8)', marginTop: 8, marginBottom: 24 }]}
+            style={[Typography.bodySmall, { color: 'rgba(255,255,255,0.8)', marginTop: 8, marginBottom: 24, textAlign: 'center', fontSize: 15 }]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     position: 'relative',
     overflow: 'hidden',
+    alignItems: 'center',
   },
   heroIconContainer: {
     position: 'absolute',
