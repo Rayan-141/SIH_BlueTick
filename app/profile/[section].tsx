@@ -94,6 +94,12 @@ export default function ProfileSectionScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const selectLanguage = (language: Language) => {
+    if (language === preferences.language) return;
+    preferences.setLanguage(language);
+    router.replace('/(tabs)/profile');
+  };
+
   const renderContent = () => {
     switch (section) {
       case 'personal':
@@ -146,7 +152,7 @@ export default function ProfileSectionScreen() {
           <View style={styles.panel}>
             <Text style={styles.sectionIntro}>Select your preferred language for CheckMate.</Text>
             {LANGUAGES.map((language) => (
-              <Pressable key={language} onPress={() => preferences.setLanguage(language as Language)} style={styles.languageRow}>
+              <Pressable key={language} onPress={() => selectLanguage(language)} style={styles.languageRow}>
                 <Text style={styles.languageName}>{language}</Text>
                 <MaterialIcons name={preferences.language === language ? 'radio-button-checked' : 'radio-button-unchecked'} size={24} color={preferences.language === language ? Colors.primary : Colors.textTertiary} />
               </Pressable>
