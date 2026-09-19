@@ -157,23 +157,19 @@ export default function HomeScreen() {
         {/* Hero Card */}
         <View style={styles.heroCard}>
           <Text 
-            style={[Typography.headlineSmall, { color: Colors.textInverse, fontWeight: '700', width: '75%' }]}
+            style={[Typography.headlineSmall, { color: Colors.textInverse, fontWeight: '700' }]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >
             Start New Inspection
           </Text>
           <Text 
-            style={[Typography.bodySmall, { color: 'rgba(255,255,255,0.8)', marginTop: 8, marginBottom: 24, width: '75%' }]}
+            style={[Typography.bodySmall, { color: 'rgba(255,255,255,0.8)', marginTop: 8, marginBottom: 24 }]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >
             AI-powered label analysis in seconds
           </Text>
-
-          <View style={styles.heroIconContainer}>
-            <MaterialIcons name="document-scanner" size={40} color={Colors.textInverse} style={{ opacity: 0.8 }} />
-          </View>
 
           <Pressable style={styles.scanButton} onPress={() => router.push('/scanner')}>
             <MaterialIcons name="center-focus-strong" size={20} color={Colors.primary} />
