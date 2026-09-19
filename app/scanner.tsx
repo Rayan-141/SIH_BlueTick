@@ -80,7 +80,7 @@ export default function ScannerScreen() {
           </Pressable>
           <Text style={[Typography.titleLarge, { color: Colors.textInverse }]}>Scan Label</Text>
           <Pressable onPress={toggleFlash} style={styles.iconButton}>
-            <MaterialIcons name={flash ? "flash-on" : "flash-off"} size={28} color={Colors.textInverse} />
+            <MaterialIcons name={flash ? "flashlight-on" : "flashlight-off"} size={28} color={Colors.textInverse} />
           </Pressable>
         </View>
 
@@ -114,7 +114,7 @@ export default function ScannerScreen() {
           </View>
 
           <Pressable style={styles.iconButton} onPress={toggleFlash}>
-            <MaterialIcons name={flash ? "flash-on" : "flash-off"} size={32} color={Colors.textInverse} />
+            <MaterialIcons name={flash ? "flashlight-on" : "flashlight-off"} size={32} color={Colors.textInverse} />
           </Pressable>
         </View>
       </CameraView>
