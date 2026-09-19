@@ -379,7 +379,6 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     position: 'relative',
     overflow: 'hidden',
-    alignItems: 'center',
   },
   heroIconContainer: {
     position: 'absolute',
