@@ -9,7 +9,7 @@ interface InspectionTrendChartProps {
 }
 
 export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ currentTotal }) => {
-  const [timeframe, setTimeframe] = useState('This Month');
+  const [timeframe, setTimeframe] = useState('Today');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const chartHeight = 160;
@@ -51,7 +51,10 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
   const dates = [];
   for(let i=6; i>=0; i--) {
     const d = new Date(today);
-    if (timeframe === 'This Week') {
+    if (timeframe === 'Today') {
+      d.setHours(today.getHours() - (i * 4));
+      dates.push(`${d.getHours().toString().padStart(2, '0')}:00`);
+    } else if (timeframe === 'This Week') {
       d.setDate(today.getDate() - i);
       dates.push(d.toLocaleString('default', { weekday: 'short' }));
     } else if (timeframe === 'This Month') {
@@ -75,7 +78,7 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
           
           {dropdownOpen && (
             <View style={styles.dropdownMenu}>
-              {['This Week', 'This Month', 'This Year'].map(option => (
+              {['Today', 'This Week', 'This Month', 'This Year'].map(option => (
                 <Pressable 
                   key={option} 
                   style={[styles.dropdownItem, timeframe === option && styles.dropdownItemActive]}
