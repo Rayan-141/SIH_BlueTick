@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, Platform } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, Typography } from '../src/theme';
 import { useInspectionLogStore } from '../src/store/inspectionLogStore';
@@ -80,7 +80,7 @@ export default function ScannerScreen() {
           </Pressable>
           <Text style={[Typography.titleLarge, { color: Colors.textInverse }]}>Scan Label</Text>
           <Pressable onPress={toggleFlash} style={styles.iconButton}>
-            <MaterialIcons name={flash ? "flashlight-on" : "flashlight-off"} size={28} color={Colors.textInverse} />
+            <MaterialIcons name={flash ? "flash-on" : "flash-off"} size={28} color={Colors.textInverse} />
           </Pressable>
         </View>
 
@@ -114,7 +114,7 @@ export default function ScannerScreen() {
           </View>
 
           <Pressable style={styles.iconButton} onPress={toggleFlash}>
-            <MaterialIcons name={flash ? "flashlight-on" : "flashlight-off"} size={32} color={Colors.textInverse} />
+            <MaterialCommunityIcons name={flash ? "flashlight" : "flashlight-off"} size={32} color={Colors.textInverse} />
           </Pressable>
         </View>
       </CameraView>
