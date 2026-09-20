@@ -261,8 +261,8 @@ export default function HomeScreen() {
         <View style={styles.timelineContainer}>
           {logStore.logs.length === 0 ? (
             <View style={styles.emptyStateContainer}>
-              <MaterialIcons name="history" size={48} color={Colors.borderLight} />
-              <Text style={[Typography.bodyMedium, { color: Colors.textTertiary, marginTop: 12, textAlign: 'center', paddingHorizontal: 32 }]}>
+              <MaterialIcons name="history" size={48} color={Colors.textTertiary} />
+              <Text style={[Typography.bodyMedium, { color: Colors.textSecondary, marginTop: 12, textAlign: 'center', paddingHorizontal: 32 }]}> 
                 No recent activity yet. Start a new inspection to see logs here.
               </Text>
             </View>
