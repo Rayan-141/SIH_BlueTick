@@ -25,7 +25,11 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Text style={[Typography.titleMedium, { fontWeight: '600', flex: 1, textAlign: 'left' }]}>Profile</Text>
+        <Pressable style={styles.iconButton} onPress={() => router.push('/')}>
+          <MaterialIcons name="arrow-back" size={24} color={Colors.textPrimary} />
+        </Pressable>
+        <Text style={[Typography.titleMedium, styles.headerTitle]}>Profile</Text>
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -118,6 +122,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
   },
+  iconButton: { padding: 8 },
+  headerTitle: { flex: 1, fontSize: 18, fontWeight: '600', textAlign: 'center' },
+  headerSpacer: { width: 40 },
   content: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
