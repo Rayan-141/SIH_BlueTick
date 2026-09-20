@@ -3,28 +3,59 @@ import { View, Text, StyleSheet, Pressable, Modal, TouchableWithoutFeedback } fr
 import Svg, { Line, Path, Circle, Defs, LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
 import { Colors, Typography, Spacing } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
+import { InspectionLog } from '../store/inspectionLogStore';
 
 interface InspectionTrendChartProps {
   currentTotal: number;
+  logs: InspectionLog[];
 }
 
-export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ currentTotal }) => {
+export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ currentTotal, logs }) => {
   const [timeframe, setTimeframe] = useState('Today');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const chartHeight = 160;
   const chartWidth = 300; // Will be responsive with 100% width, but we use a viewBox
   
-  // Create 7 data points leading up to currentTotal to simulate real-time historical data
-  const dataPoints = [
-    Math.floor(currentTotal * 0.1),
-    Math.floor(currentTotal * 0.3),
-    Math.floor(currentTotal * 0.2), // slight dip
-    Math.floor(currentTotal * 0.5),
-    Math.floor(currentTotal * 0.7),
-    Math.floor(currentTotal * 0.8),
-    currentTotal // Today's actual real-time value
-  ];
+  const formatHour = (date: Date) => {
+    const hour = date.getHours();
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
+  };
+
+  const now = new Date();
+  const chartDates = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(now);
+    const distance = 6 - index;
+    if (timeframe === 'Today') {
+      date.setHours(now.getHours() - (distance * 4), 0, 0, 0);
+    } else if (timeframe === 'This Week') {
+      date.setDate(now.getDate() - distance);
+      date.setHours(0, 0, 0, 0);
+    } else if (timeframe === 'This Month') {
+      date.setDate(now.getDate() - (distance * 5));
+      date.setHours(0, 0, 0, 0);
+    } else {
+      date.setMonth(now.getMonth() - (distance * 2), 1);
+      date.setHours(0, 0, 0, 0);
+    }
+    return date;
+  });
+
+  const dataPoints = chartDates.map((date, index) => {
+    const nextDate = index === chartDates.length - 1 ? new Date(date) : chartDates[index + 1];
+    if (index === chartDates.length - 1) {
+      if (timeframe === 'Today') nextDate.setHours(nextDate.getHours() + 4);
+      else if (timeframe === 'This Week') nextDate.setDate(nextDate.getDate() + 1);
+      else if (timeframe === 'This Month') nextDate.setDate(nextDate.getDate() + 5);
+      else nextDate.setMonth(nextDate.getMonth() + 2);
+    }
+    return logs.filter((log) => {
+      if (!log.createdAt) return false;
+      const createdAt = new Date(log.createdAt).getTime();
+      return createdAt >= date.getTime() && createdAt < nextDate.getTime();
+    }).length;
+  });
 
   const maxVal = Math.max(...dataPoints, 600); // Scale to at least 600 like the image, or higher if total exceeds it
   const yAxisLabels = [maxVal, Math.floor(maxVal * 0.75), Math.floor(maxVal * 0.5), Math.floor(maxVal * 0.25), 0];
@@ -47,21 +78,16 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
   const areaD = `${pathD} L ${points[points.length-1].x},${paddingY + innerHeight} L ${points[0].x},${paddingY + innerHeight} Z`;
 
   // Generate X-axis dates based on timeframe
-  const today = new Date();
   const dates = [];
   for(let i=6; i>=0; i--) {
-    const d = new Date(today);
+    const d = chartDates[6 - i];
     if (timeframe === 'Today') {
-      d.setHours(today.getHours() - (i * 4));
-      dates.push(`${d.getHours().toString().padStart(2, '0')}:00`);
+      dates.push(formatHour(d));
     } else if (timeframe === 'This Week') {
-      d.setDate(today.getDate() - i);
       dates.push(d.toLocaleString('default', { weekday: 'short' }));
     } else if (timeframe === 'This Month') {
-      d.setDate(today.getDate() - (i * 5));
       dates.push(`${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('default', { month: 'short' })}`);
     } else if (timeframe === 'This Year') {
-      d.setMonth(today.getMonth() - (i * 2));
       dates.push(d.toLocaleString('default', { month: 'short' }));
     }
   }

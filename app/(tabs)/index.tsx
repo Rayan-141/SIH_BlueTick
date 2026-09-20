@@ -78,6 +78,7 @@ export default function HomeScreen() {
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       logStore.addLog({
         time: 'Today',
+        createdAt: now.toISOString(),
         productName: 'Recent Scan',
         companyName: 'Pending Detection',
         officerName: user?.name?.split(' ')[0] || 'Officer',

@@ -4,12 +4,14 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useStatsStore } from '../../src/store/statsStore';
+import { useInspectionLogStore } from '../../src/store/inspectionLogStore';
 import { InspectionTrendChart } from '../../src/components/InspectionTrendChart';
 import { InspectionActivityTimeline } from '../../src/components/InspectionActivityTimeline';
 
 export default function DashboardScreen() {
   const router = useRouter();
   const stats = useStatsStore();
+  const logs = useInspectionLogStore((state) => state.logs);
 
   const total = stats.checked + stats.inProgress;
   const compliantPercent = total > 0 ? Math.round((stats.compliant / total) * 100) : 0;
@@ -82,7 +84,7 @@ export default function DashboardScreen() {
         </View>
 
         {/* Real-time Inspection Trend Line Chart */}
-        <InspectionTrendChart currentTotal={total} />
+        <InspectionTrendChart currentTotal={total} logs={logs} />
         
         {/* Horizontal Inspection Activity Timeline */}
         <InspectionActivityTimeline />

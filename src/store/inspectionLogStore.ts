@@ -7,6 +7,7 @@ export type AIReviewLevel = 'High' | 'Medium' | 'Low';
 export interface InspectionLog {
   id: string;
   time: string; // Used as Date or "Today"
+  createdAt?: string;
   productName: string;
   companyName: string;
   officerName: string;
