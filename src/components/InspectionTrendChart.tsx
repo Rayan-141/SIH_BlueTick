@@ -18,25 +18,42 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
   const chartWidth = 300; // Will be responsive with 100% width, but we use a viewBox
   
   const formatHour = (date: Date) => {
-    const hour = date.getHours();
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
+    return `${date.getHours() % 12 || 12}:00`;
   };
 
   const now = new Date();
+  const datedLogs = logs
+    .filter((log) => log.createdAt)
+    .map((log) => new Date(log.createdAt as string))
+    .filter((date) => !Number.isNaN(date.getTime()))
+    .sort((first, second) => first.getTime() - second.getTime());
+  const firstTodayLog = datedLogs.find((date) => (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  ));
+
+  const startOfWeek = new Date(now);
+  const dayFromMonday = (startOfWeek.getDay() + 6) % 7;
+  startOfWeek.setDate(startOfWeek.getDate() - dayFromMonday);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
   const chartDates = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(now);
-    const distance = 6 - index;
     if (timeframe === 'Today') {
-      date.setHours(now.getHours() - (distance * 4), 0, 0, 0);
-    } else if (timeframe === 'This Week') {
-      date.setDate(now.getDate() - distance);
-      date.setHours(0, 0, 0, 0);
-    } else if (timeframe === 'This Month') {
-      date.setDate(now.getDate() - (distance * 5));
-      date.setHours(0, 0, 0, 0);
+      const firstInspectionTime = firstTodayLog ? new Date(firstTodayLog) : new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      firstInspectionTime.setMinutes(0, 0, 0);
+      date.setTime(firstInspectionTime.getTime() + (index * 4 * 60 * 60 * 1000));
+    } else if (timeframe === 'Weekly') {
+      date.setTime(startOfWeek.getTime() + (index * 24 * 60 * 60 * 1000));
+    } else if (timeframe === 'Monthly') {
+      date.setTime(startOfMonth.getTime() + (index * 5 * 24 * 60 * 60 * 1000));
     } else {
-      date.setMonth(now.getMonth() - (distance * 2), 1);
+      date.setMonth(startOfYear.getMonth() + (index * 2), 1);
+      date.setFullYear(startOfYear.getFullYear());
       date.setHours(0, 0, 0, 0);
     }
     return date;
@@ -46,8 +63,8 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
     const nextDate = index === chartDates.length - 1 ? new Date(date) : chartDates[index + 1];
     if (index === chartDates.length - 1) {
       if (timeframe === 'Today') nextDate.setHours(nextDate.getHours() + 4);
-      else if (timeframe === 'This Week') nextDate.setDate(nextDate.getDate() + 1);
-      else if (timeframe === 'This Month') nextDate.setDate(nextDate.getDate() + 5);
+      else if (timeframe === 'Weekly') nextDate.setDate(nextDate.getDate() + 1);
+      else if (timeframe === 'Monthly') nextDate.setDate(nextDate.getDate() + 5);
       else nextDate.setMonth(nextDate.getMonth() + 2);
     }
     return logs.filter((log) => {
@@ -77,20 +94,12 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
   // Area under the line
   const areaD = `${pathD} L ${points[points.length-1].x},${paddingY + innerHeight} L ${points[0].x},${paddingY + innerHeight} Z`;
 
-  // Generate X-axis dates based on timeframe
-  const dates = [];
-  for(let i=6; i>=0; i--) {
-    const d = chartDates[6 - i];
-    if (timeframe === 'Today') {
-      dates.push(formatHour(d));
-    } else if (timeframe === 'This Week') {
-      dates.push(d.toLocaleString('default', { weekday: 'short' }));
-    } else if (timeframe === 'This Month') {
-      dates.push(`${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('default', { month: 'short' })}`);
-    } else if (timeframe === 'This Year') {
-      dates.push(d.toLocaleString('default', { month: 'short' }));
-    }
-  }
+  const dates = chartDates.map((date) => {
+    if (timeframe === 'Today') return formatHour(date);
+    if (timeframe === 'Weekly') return date.toLocaleString('default', { weekday: 'short' });
+    if (timeframe === 'Monthly') return `${date.getDate().toString().padStart(2, '0')} ${date.toLocaleString('default', { month: 'short' })}`;
+    return date.toLocaleString('default', { month: 'short' });
+  });
 
   return (
     <View style={styles.card}>
@@ -104,7 +113,7 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
           
           {dropdownOpen && (
             <View style={styles.dropdownMenu}>
-              {['Today', 'This Week', 'This Month', 'This Year'].map(option => (
+              {['Today', 'Weekly', 'Monthly', 'Yearly'].map(option => (
                 <Pressable 
                   key={option} 
                   style={[styles.dropdownItem, timeframe === option && styles.dropdownItemActive]}
