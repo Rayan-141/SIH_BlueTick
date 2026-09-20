@@ -69,7 +69,7 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={[Typography.titleSmall, { fontWeight: '600' }]}>Inspection Trend</Text>
+        <Text style={[Typography.titleSmall, { fontWeight: '600', fontSize: 18 }]}>Inspection Trend</Text>
         <View style={{ zIndex: 100 }}>
           <Pressable style={styles.dropdown} onPress={() => setDropdownOpen(!dropdownOpen)}>
             <Text style={styles.dropdownText}>{timeframe}</Text>
@@ -112,7 +112,7 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
             return (
               <React.Fragment key={`grid-${i}`}>
                 <Line x1={paddingX} y1={y} x2={chartWidth + 20} y2={y} stroke="#F0F0F0" strokeWidth="1" />
-                <SvgText x={paddingX - 10} y={y + 4} fontSize="10" fill={Colors.textSecondary} textAnchor="end">
+                <SvgText x={paddingX - 10} y={y + 4} fontSize="11" fill={Colors.textSecondary} textAnchor="end">
                   {val}
                 </SvgText>
               </React.Fragment>
@@ -142,7 +142,7 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
           {dates.map((dateStr, i) => {
             const x = paddingX + (i / (dates.length - 1)) * innerWidth;
             return (
-              <SvgText key={`date-${i}`} x={x} y={chartHeight - 2} fontSize="9" fill={Colors.textSecondary} textAnchor="middle">
+              <SvgText key={`date-${i}`} x={x} y={chartHeight - 2} fontSize="10" fill={Colors.textSecondary} textAnchor="middle">
                 {dateStr}
               </SvgText>
             );
@@ -152,8 +152,8 @@ export const InspectionTrendChart: React.FC<InspectionTrendChartProps> = ({ curr
         {/* Tooltip for latest point (Today) */}
         {currentTotal > 0 && (
           <View style={[styles.tooltip, { right: 10, top: points[points.length - 1].y - 45 }]}>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: Colors.textPrimary }}>Today</Text>
-            <Text style={{ fontSize: 10, color: Colors.textSecondary }}>{currentTotal} Inspections</Text>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: Colors.textPrimary }}>Today</Text>
+            <Text style={{ fontSize: 11, color: Colors.textSecondary }}>{currentTotal} Inspections</Text>
           </View>
         )}
       </View>
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   dropdownText: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.textSecondary,
     marginRight: 4,
   },
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary + '10',
   },
   dropdownItemText: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.textPrimary,
   },
   dropdownItemTextActive: {

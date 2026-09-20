@@ -25,10 +25,10 @@ export const InspectionActivityTimeline = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[Typography.labelMedium, { fontWeight: '700', color: Colors.textSecondary, letterSpacing: 0.5 }]}>
+        <Text style={[Typography.labelMedium, { fontWeight: '700', fontSize: 14, color: Colors.textSecondary, letterSpacing: 0.5 }]}> 
           INSPECTION ACTIVITY
         </Text>
-        <Text style={[Typography.labelMedium, { color: Colors.primary, fontWeight: '600' }]}>
+        <Text style={[Typography.labelMedium, { fontSize: 14, color: Colors.primary, fontWeight: '600' }]}> 
           View all →
         </Text>
       </View>
@@ -36,7 +36,7 @@ export const InspectionActivityTimeline = () => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.timelineContainer}>
         {logs.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={[Typography.bodySmall, { color: Colors.textSecondary }]}>
+            <Text style={[Typography.bodySmall, { fontSize: 14, lineHeight: 20, color: Colors.textSecondary }]}> 
               No inspection activity yet. Scanned products will appear here.
             </Text>
           </View>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   productName: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: Colors.textPrimary,
     textAlign: 'center',
@@ -152,15 +152,15 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   scoreText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '700',
   },
   statusText: {
-    fontSize: 10,
+    fontSize: 11,
     color: Colors.textSecondary,
   },
   timeText: {
-    fontSize: 10,
+    fontSize: 11,
     color: Colors.textSecondary,
   }
 });

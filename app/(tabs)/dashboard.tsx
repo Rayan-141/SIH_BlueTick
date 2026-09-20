@@ -26,13 +26,13 @@ export default function DashboardScreen() {
         <Pressable style={styles.iconButton} onPress={() => router.push('/')}>
           <MaterialIcons name="arrow-back" size={24} color={Colors.textPrimary} />
         </Pressable>
-        <Text style={[Typography.titleMedium, { fontWeight: '600' }]}>Dashboard</Text>
+        <Text style={[Typography.titleMedium, { fontWeight: '600', fontSize: 18 }]}>Dashboard</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.distributionCard}>
-          <Text style={[Typography.titleSmall, { fontWeight: '600', marginBottom: 16 }]}>Compliance Distribution</Text>
+          <Text style={[Typography.titleSmall, { fontWeight: '600', fontSize: 18, marginBottom: 16 }]}>Compliance Distribution</Text>
           <View style={styles.distributionRow}>
             {/* Circular Chart */}
             <View style={styles.distributionChart}>
@@ -160,11 +160,13 @@ const styles = StyleSheet.create({
   },
   legendText: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 14,
+    lineHeight: 20,
     color: Colors.textSecondary,
   },
   legendValue: {
-    fontSize: 12,
+    fontSize: 14,
+    lineHeight: 20,
     fontWeight: '600',
     color: Colors.textPrimary,
   },
