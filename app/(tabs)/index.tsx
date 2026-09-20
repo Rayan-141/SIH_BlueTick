@@ -254,7 +254,9 @@ export default function HomeScreen() {
         {/* Recent Activity Log */}
         <View style={styles.recentActivityHeader}>
           <Text style={[Typography.labelSmall, { color: Colors.primary, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '700' }]}>RECENT ACTIVITY</Text>
-          <Pressable><Text style={[Typography.labelMedium, { color: Colors.primary, fontWeight: '600' }]}>View all &rarr;</Text></Pressable>
+          <Pressable accessibilityRole="button" onPress={() => router.push('/inspections')}>
+            <Text style={[Typography.labelMedium, { color: Colors.primary, fontWeight: '600' }]}>View all &rarr;</Text>
+          </Pressable>
         </View>
         <Text style={[Typography.titleMedium, { paddingHorizontal: Spacing.screenHorizontal, marginBottom: Spacing.md, fontWeight: '700' }]}>Latest inspection log</Text>
 
