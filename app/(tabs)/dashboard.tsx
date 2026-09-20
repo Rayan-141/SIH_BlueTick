@@ -6,7 +6,7 @@ import { Colors, Typography, Spacing, Radius } from '../../src/theme';
 import { useStatsStore } from '../../src/store/statsStore';
 import { useInspectionLogStore } from '../../src/store/inspectionLogStore';
 import { InspectionTrendChart } from '../../src/components/InspectionTrendChart';
-import { InspectionActivityTimeline } from '../../src/components/InspectionActivityTimeline';
+import { StandardsOverview } from '../../src/components/StandardsOverview';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -86,8 +86,7 @@ export default function DashboardScreen() {
         {/* Real-time Inspection Trend Line Chart */}
         <InspectionTrendChart currentTotal={total} logs={logs} />
         
-        {/* Horizontal Inspection Activity Timeline */}
-        <InspectionActivityTimeline />
+        <StandardsOverview onViewAll={() => router.push('/standards')} />
       </ScrollView>
     </SafeAreaView>
   );
